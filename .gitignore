@@ -7,6 +7,9 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 
+# Cursor cache
+.cursor/
+
 # Firebase cache
 .firebase/
 
@@ -68,6 +71,6 @@ node_modules/
 # dataconnect generated files
 .dataconnect
 
-
+# Service account keys
 serviceAccountKey.json
 firebase-cursor-key.json
