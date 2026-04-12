@@ -12,6 +12,7 @@ import 'package:nomnom_safe/widgets/filter_modal.dart';
 import 'package:nomnom_safe/utils/restaurant_utils.dart';
 import 'package:nomnom_safe/services/auth_service.dart';
 import 'package:nomnom_safe/nav/route_tracker.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 /// Main screen displaying allergen filters and a list of restaurants
 class HomeScreen extends StatefulWidget {
@@ -92,8 +93,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   @override
   void didPopNext() {
-    // User returned from ProfileScreen
-    _fetchAllergens(); // refresh selection
+    _allergenService.clearCache();
+    _fetchAllergens();
   }
 
   /// Fetch allergen labels and update the state if the widget is still mounted
@@ -117,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     } catch (e) {
       if (mounted) {
         setState(() {
-          allergenError = "Error loading allergens.";
+          allergenError = UserFeedbackMessages.loadAllergensFailed;
           isLoadingAllergens = false;
         });
       }
@@ -175,8 +176,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     } catch (_) {
       if (mounted) {
         setState(() {
-          _restaurantError =
-              'Could not load restaurants. Please try again later.';
+          _restaurantError = UserFeedbackMessages.loadRestaurantsFailed;
           isLoadingRestaurants = false;
         });
       }
@@ -231,12 +231,51 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     } catch (_) {
       if (mounted) {
         setState(() {
-          _restaurantError =
-              'Could not filter restaurants. Please try again later.';
+          _restaurantError = UserFeedbackMessages.filterRestaurantsFailed;
           isLoadingRestaurants = false;
         });
       }
     }
+  }
+
+  Widget _buildCuisineFilter(BuildContext context) {
+    final allCuisineOptions = extractAvailableCuisines(unfilteredRestaurants);
+    final visibleOptions = availableCuisines;
+
+    if (allCuisineOptions.isEmpty) {
+      return FilterModal(
+        buttonLabel: 'Cuisines',
+        title: 'Filter by Cuisine',
+        options: const [],
+        selectedOptions: selectedCuisines,
+        onChanged: (_) {},
+        enabled: false,
+        disabledTooltip:
+            'No cuisine types are available for the loaded restaurants.',
+      );
+    }
+
+    final canFilter = restaurantList.isNotEmpty && visibleOptions.isNotEmpty;
+    if (!canFilter) {
+      return FilterModal(
+        buttonLabel: 'Cuisines',
+        title: 'Filter by Cuisine',
+        options: visibleOptions.isNotEmpty ? visibleOptions : allCuisineOptions,
+        selectedOptions: selectedCuisines,
+        onChanged: _filterRestaurantsByCuisine,
+        enabled: false,
+        disabledTooltip:
+            'No restaurants match your filters. Adjust allergen filters to use cuisine filter.',
+      );
+    }
+
+    return FilterModal(
+      buttonLabel: 'Cuisines',
+      title: 'Filter by Cuisine',
+      options: visibleOptions,
+      selectedOptions: selectedCuisines,
+      onChanged: _filterRestaurantsByCuisine,
+    );
   }
 
   @override
@@ -289,20 +328,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         },
                       ),
               ),
-              const SizedBox(width: 12), // spacing between filters
-              // Cuisine Filter
-              if (!(_selectedAllergenIds.isNotEmpty &&
-                      restaurantList.isEmpty) &&
-                  availableCuisines.isNotEmpty)
-                Expanded(
-                  child: FilterModal(
-                    buttonLabel: 'Cuisines',
-                    title: 'Filter by Cuisine',
-                    options: availableCuisines,
-                    selectedOptions: selectedCuisines,
-                    onChanged: _filterRestaurantsByCuisine,
-                  ),
-                ),
+              if (!isLoadingAllergens && allergenError == null) ...[
+                const SizedBox(width: 12),
+                Expanded(child: _buildCuisineFilter(context)),
+              ],
             ],
           ),
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nomnom_safe/models/profile_update_result.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 enum ProfileViewState { editProfile, verifyCurrentPassword, updatePassword }
 
@@ -52,7 +54,7 @@ class EditProfileController extends ChangeNotifier {
       allergenLabelToId = {};
       selectedAllergenLabels = {};
       isLoadingAllergens = false;
-      errorMessage = "Could not load allergen data.";
+      errorMessage = UserFeedbackMessages.loadAllergensFailed;
       notifyListeners();
     }
   }
@@ -71,7 +73,7 @@ class EditProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveChanges({
+  Future<ProfileUpdateResult> saveChanges({
     required String firstName,
     required String lastName,
     required String email,
@@ -82,7 +84,7 @@ class EditProfileController extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
 
-    final error = await authProvider.updateProfile(
+    final result = await authProvider.updateProfile(
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -92,8 +94,9 @@ class EditProfileController extends ChangeNotifier {
     );
 
     isLoading = false;
-    errorMessage = error;
+    errorMessage = result.error;
     notifyListeners();
+    return result;
   }
 
   Future<void> verifyCurrentPassword(String currentPassword) async {

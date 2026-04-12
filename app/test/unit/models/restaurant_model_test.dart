@@ -55,7 +55,55 @@ void main() {
       cuisine: '',
       disclaimers: [],
     );
-    expect(r.todayHours, 'Hours unavailable');
+    expect(r.todayHours, Restaurant.unavailableDisplay);
+  });
+
+  test('display fields use unavailableDisplay when empty', () {
+    final r = Restaurant(
+      id: 'r1',
+      name: '',
+      addressId: '',
+      website: '',
+      hours: ['', 'Mon', '', '', '', '', ''],
+      phone: '  ',
+      cuisine: '',
+      disclaimers: [],
+    );
+    expect(r.displayName, Restaurant.unavailableDisplay);
+    expect(r.displayCuisine, Restaurant.unavailableDisplay);
+    expect(r.displayPhone, Restaurant.unavailableDisplay);
+    expect(r.displayHourLines, [
+      Restaurant.unavailableDisplay,
+      'Mon',
+      Restaurant.unavailableDisplay,
+      Restaurant.unavailableDisplay,
+      Restaurant.unavailableDisplay,
+      Restaurant.unavailableDisplay,
+      Restaurant.unavailableDisplay,
+    ]);
+  });
+
+  test('todayHours is unavailable when today line is blank (any weekday)', () {
+    final r = Restaurant(
+      id: 'r1',
+      name: 'N',
+      addressId: '',
+      website: '',
+      hours: List.filled(7, ''),
+      phone: '',
+      cuisine: '',
+      disclaimers: [],
+    );
+    expect(r.todayHours, Restaurant.unavailableDisplay);
+  });
+
+  test('displayName maps JSON Unknown sentinel to unavailableDisplay', () {
+    final r = Restaurant.fromJson({
+      'id': 'r1',
+      'name': 'Unknown',
+      'address_id': 'a',
+    });
+    expect(r.displayName, Restaurant.unavailableDisplay);
   });
 
   test('Restaurant.fromJson handles missing optional fields', () {

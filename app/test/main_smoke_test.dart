@@ -10,6 +10,8 @@ import 'package:nomnom_safe/models/allergen.dart';
 
 class _FakeAllergenService implements AllergenService {
   @override
+  void clearCache() {}
+  @override
   Future<List<Allergen>> getAllergens() async => [];
 
   @override

@@ -1,6 +1,9 @@
 import 'menu.dart';
 
 class Restaurant {
+  /// Shown in the UI when a field is missing, empty, or not meaningful.
+  static const String unavailableDisplay = 'Unavailable';
+
   final String id;
   final String name;
   final String addressId;
@@ -71,7 +74,34 @@ class Restaurant {
   /// Get today's operating hours based on the current weekday
   String get todayHours {
     final weekday = DateTime.now().weekday;
-    if (hours.isEmpty || weekday > hours.length) return 'Hours unavailable';
-    return hours[weekday - 1]; // Dart: 1 = Monday, 7 = Sunday
+    if (hours.isEmpty || weekday > hours.length) return unavailableDisplay;
+    final line = hours[weekday - 1].trim();
+    return line.isEmpty ? unavailableDisplay : line;
+  }
+
+  /// Name for display; treats missing JSON name (`Unknown`) as absent.
+  String get displayName {
+    final t = name.trim();
+    if (t.isEmpty || t == 'Unknown') return unavailableDisplay;
+    return t;
+  }
+
+  String get displayCuisine {
+    final t = cuisine.trim();
+    return t.isEmpty ? unavailableDisplay : t;
+  }
+
+  String get displayPhone {
+    final t = phone.trim();
+    return t.isEmpty ? unavailableDisplay : t;
+  }
+
+  /// Weekly hour lines for detail screens; never empty when [hours] is empty.
+  List<String> get displayHourLines {
+    if (hours.isEmpty) return [unavailableDisplay];
+    return hours.map((h) {
+      final t = h.trim();
+      return t.isEmpty ? unavailableDisplay : t;
+    }).toList();
   }
 }

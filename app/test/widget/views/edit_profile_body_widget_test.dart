@@ -5,6 +5,7 @@ import 'package:nomnom_safe/models/profile_form_model.dart';
 import 'package:nomnom_safe/controllers/edit_profile_controller.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
+import 'package:nomnom_safe/models/profile_update_result.dart';
 import 'package:nomnom_safe/models/user.dart';
 
 class _NoopAuth extends AuthStateProvider {
@@ -34,7 +35,7 @@ class _FakeAuthProvider extends AuthStateProvider {
   User? get currentUser => null;
 
   @override
-  Future<String?> updateProfile({
+  Future<ProfileUpdateResult> updateProfile({
     required String firstName,
     required String lastName,
     required String email,
@@ -42,7 +43,7 @@ class _FakeAuthProvider extends AuthStateProvider {
     required String confirmPassword,
     List<String>? allergies,
   }) async {
-    return null;
+    return ProfileUpdateResult.ok();
   }
 
   @override

@@ -1,12 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/controllers/edit_profile_controller.dart';
+import 'package:nomnom_safe/models/profile_update_result.dart';
 import 'package:nomnom_safe/models/user.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
 
 class _FakeAuthProvider extends AuthStateProvider {
   User? _user;
-  String? updateProfileResult;
+  ProfileUpdateResult? updateProfileResult;
   bool verifyPasswordResult = false;
   String? updatePasswordResult;
 
@@ -16,7 +17,7 @@ class _FakeAuthProvider extends AuthStateProvider {
   User? get currentUser => _user;
 
   @override
-  Future<String?> updateProfile({
+  Future<ProfileUpdateResult> updateProfile({
     required String firstName,
     required String lastName,
     required String email,
@@ -24,7 +25,7 @@ class _FakeAuthProvider extends AuthStateProvider {
     required String confirmPassword,
     List<String>? allergies,
   }) async {
-    return updateProfileResult;
+    return updateProfileResult ?? ProfileUpdateResult.ok();
   }
 
   @override
@@ -129,7 +130,7 @@ void main() {
         allergies: [],
       );
       final auth = _FakeAuthProvider(user);
-      auth.updateProfileResult = 'some error';
+      auth.updateProfileResult = ProfileUpdateResult.failure('some error');
 
       final allergen = _FakeAllergenService(
         idToLabel: {},

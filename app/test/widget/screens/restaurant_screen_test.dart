@@ -13,6 +13,8 @@ class FakeAddressService implements AddressService {
 
 class FakeAllergenService implements AllergenService {
   @override
+  void clearCache() {}
+  @override
   Future<List<Allergen>> getAllergens() async => [];
   @override
   Future<List<String>> getAllergenLabels() async => [];

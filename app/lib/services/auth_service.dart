@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:nomnom_safe/models/profile_update_result.dart';
 import 'package:nomnom_safe/models/user.dart';
 import 'package:nomnom_safe/services/adapters/auth_adapter.dart';
 import 'package:nomnom_safe/services/adapters/firestore_adapter.dart';
@@ -106,7 +107,11 @@ class AuthService {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       await loadCurrentUser();
-      if (_currentUser == null) return 'User profile not found';
+      if (_currentUser == null) {
+        await _auth.signOut();
+        _currentUser = null;
+        return 'User profile not found';
+      }
     } on fb_auth.FirebaseAuthException {
       return 'Error signing in.';
     }
@@ -121,7 +126,7 @@ class AuthService {
   }
 
   /// Update the current user's profile information
-  Future<String?> updateProfile({
+  Future<ProfileUpdateResult> updateProfile({
     required String firstName,
     required String lastName,
     required String email,
@@ -132,15 +137,15 @@ class AuthService {
     final fbUser = _auth.currentUser;
     final uid = fbUser?.uid;
     if (uid == null || _currentUser == null) {
-      return 'No user is currently signed in';
+      return ProfileUpdateResult.failure('No user is currently signed in');
     }
     if (password != confirmPassword) {
-      return 'Passwords do not match';
+      return ProfileUpdateResult.failure('Passwords do not match');
     }
 
     final updates = <String, dynamic>{};
+    String? emailVerificationNotice;
 
-    // Compare each field
     if (firstName != _currentUser!.firstName) updates['first_name'] = firstName;
     if (lastName != _currentUser!.lastName) updates['last_name'] = lastName;
     if (allergies != null &&
@@ -148,19 +153,19 @@ class AuthService {
       updates['allergies'] = allergies;
     }
 
-    // Handle email change
     if (email != fbUser?.email) {
       await fbUser?.verifyBeforeUpdateEmail(email);
       updates['pending_email'] = email;
+      emailVerificationNotice =
+          'A verification email has been sent to $email. Your email will update after you verify.';
     }
 
-    // Only write if something changed
     if (updates.isNotEmpty) {
       await _firestore.collection('users').doc(uid).update(updates);
-      await loadCurrentUser(); // Refresh local copy
+      await loadCurrentUser();
     }
 
-    return null; // success
+    return ProfileUpdateResult.ok(userMessage: emailVerificationNotice);
   }
 
   Future<bool> verifyPassword(String password) async {

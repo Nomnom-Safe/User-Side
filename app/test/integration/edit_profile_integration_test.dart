@@ -7,6 +7,7 @@ import 'package:nomnom_safe/providers/auth_state_provider.dart';
 import 'package:nomnom_safe/models/user.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/models/profile_form_model.dart';
+import 'package:nomnom_safe/models/profile_update_result.dart';
 
 class _FakeAllergenService extends AllergenService {
   final Map<String, String> idToLabel;
@@ -36,16 +37,16 @@ class _FakeAuthProvider extends AuthStateProvider {
   User? get currentUser => _user;
 
   @override
-  Future<String?> updateProfile({
+  Future<ProfileUpdateResult> updateProfile({
     required String firstName,
     required String lastName,
     required String email,
     required String password,
     required String confirmPassword,
-    List<String>? allergies, // <-- match signature
+    List<String>? allergies,
   }) async {
     updateProfileCalled = true;
-    return null; // simulate success
+    return ProfileUpdateResult.ok();
   }
 
   @override

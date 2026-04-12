@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nomnom_safe/models/profile_update_result.dart';
 import 'package:nomnom_safe/services/auth_service.dart';
 import 'package:nomnom_safe/services/adapters/auth_adapter.dart';
 import 'package:nomnom_safe/services/adapters/firestore_adapter.dart';
@@ -102,7 +103,7 @@ void main() {
 
     final provider = AuthStateProvider(service);
 
-    final err = await provider.updateProfile(
+    final result = await provider.updateProfile(
       firstName: 'After',
       lastName: 'User',
       email: 'before@example.com',
@@ -111,7 +112,8 @@ void main() {
       allergies: [],
     );
 
-    expect(err, isNull);
+    expect(result, isA<ProfileUpdateResult>());
+    expect(result.isSuccess, isTrue);
     expect(provider.currentUser?.firstName, 'After');
     final doc = await fakeFs.collection('users').doc('edit_uid').get();
     expect(doc, isNotNull);

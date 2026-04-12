@@ -6,7 +6,7 @@ class VerifyCurrentPasswordView extends StatelessWidget {
   final TextEditingController controller;
   final bool isVisible;
   final VoidCallback onToggleVisibility;
-  final VoidCallback onContinue;
+  final Future<void> Function() onContinue;
   final bool isLoading;
   final String? errorMessage;
 

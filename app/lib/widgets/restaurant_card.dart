@@ -60,14 +60,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   children: [
                     // Restaurant name
                     Text(
-                      widget.restaurant.name,
+                      widget.restaurant.displayName,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     // Cuisine type
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        'Cuisine: ${widget.restaurant.cuisine}',
+                        'Cuisine: ${widget.restaurant.displayCuisine}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[700],
                         ),

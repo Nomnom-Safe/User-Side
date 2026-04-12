@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:nomnom_safe/services/auth_service.dart';
+import 'package:nomnom_safe/models/profile_update_result.dart';
 import 'package:nomnom_safe/models/user.dart';
+import 'package:nomnom_safe/services/auth_service.dart';
 
 /// AuthStateProvider notifies listeners when authentication state changes
 class AuthStateProvider extends ChangeNotifier {
@@ -48,7 +49,7 @@ class AuthStateProvider extends ChangeNotifier {
   }
 
   /// Update profile and notify listeners
-  Future<String?> updateProfile({
+  Future<ProfileUpdateResult> updateProfile({
     required String firstName,
     required String lastName,
     required String email,
@@ -56,7 +57,7 @@ class AuthStateProvider extends ChangeNotifier {
     required String confirmPassword,
     List<String>? allergies,
   }) async {
-    final error = await (_authService ??= AuthService()).updateProfile(
+    final result = await (_authService ??= AuthService()).updateProfile(
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -65,7 +66,7 @@ class AuthStateProvider extends ChangeNotifier {
       allergies: allergies,
     );
     notifyListeners();
-    return error;
+    return result;
   }
 
   Future<void> loadCurrentUser() async {

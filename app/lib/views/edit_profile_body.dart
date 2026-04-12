@@ -21,7 +21,7 @@ class EditProfileBody extends StatelessWidget {
       case ProfileViewState.editProfile:
         return _buildEditProfileView(context);
       case ProfileViewState.verifyCurrentPassword:
-        return _buildVerifyPasswordView();
+        return _buildVerifyPasswordView(context);
       case ProfileViewState.updatePassword:
         return _buildUpdatePasswordView();
     }
@@ -34,7 +34,7 @@ class EditProfileBody extends StatelessWidget {
       lastNameController: formModel.lastName,
       emailController: formModel.email,
       onSave: () async {
-        await controller.saveChanges(
+        final result = await controller.saveChanges(
           firstName: formModel.firstName.text.trim(),
           lastName: formModel.lastName.text.trim(),
           email: formModel.email.text.trim(),
@@ -42,9 +42,13 @@ class EditProfileBody extends StatelessWidget {
           confirmPassword: formModel.confirmPassword.text,
         );
 
-        if (controller.errorMessage == null && context.mounted) {
-          Navigator.of(context).pop(true); // return success flag
+        if (!result.isSuccess || !context.mounted) return;
+        if (result.userMessage != null) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(result.userMessage!)));
         }
+        Navigator.of(context).pop(true);
       },
       onChangePassword: controller.goToVerifyPassword,
       isLoading: controller.isLoading,
@@ -54,13 +58,17 @@ class EditProfileBody extends StatelessWidget {
     );
   }
 
-  Widget _buildVerifyPasswordView() {
+  Widget _buildVerifyPasswordView(BuildContext context) {
     return VerifyCurrentPasswordView(
       controller: formModel.currentPassword,
       isVisible: controller.arePasswordsVisible,
       onToggleVisibility: controller.togglePasswordVisibility,
-      onContinue: () =>
-          controller.verifyCurrentPassword(formModel.currentPassword.text),
+      onContinue: () async {
+        await controller.verifyCurrentPassword(formModel.currentPassword.text);
+        if (controller.errorMessage != null) {
+          formModel.currentPassword.clear();
+        }
+      },
       isLoading: controller.isLoading,
       errorMessage: controller.errorMessage,
     );

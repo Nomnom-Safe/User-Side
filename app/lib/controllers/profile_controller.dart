@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
+import 'package:nomnom_safe/services/allergen_service.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 class ProfileController extends ChangeNotifier {
   final AuthStateProvider authProvider;
@@ -37,7 +38,7 @@ class ProfileController extends ChangeNotifier {
       isLoadingAllergens = false;
       notifyListeners();
     } catch (e) {
-      allergenError = "Error loading allergens.";
+      allergenError = UserFeedbackMessages.loadAllergensFailed;
       isLoadingAllergens = false;
       notifyListeners();
     }

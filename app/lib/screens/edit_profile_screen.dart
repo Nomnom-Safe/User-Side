@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nomnom_safe/controllers/edit_profile_controller.dart';
 import 'package:nomnom_safe/models/profile_form_model.dart';
-import 'package:nomnom_safe/widgets/error_banner.dart';
-import 'package:nomnom_safe/widgets/back_button_row.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
+import 'package:nomnom_safe/widgets/back_button_row.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
 import 'package:nomnom_safe/views/edit_profile_body.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -34,6 +34,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<EditProfileController>(
       builder: (context, controller, _) {
+        final auth = context.watch<AuthStateProvider>();
+        if (auth.currentUser == null) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const BackButtonRow(),
+                const SizedBox(height: 20),
+                const ErrorBanner('Please sign in to edit your profile.'),
+              ],
+            ),
+          );
+        }
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(

@@ -7,6 +7,8 @@ class FilterModal extends StatelessWidget {
   final List<String> options;
   final List<String> selectedOptions;
   final ValueChanged<List<String>> onChanged;
+  final bool enabled;
+  final String? disabledTooltip;
 
   const FilterModal({
     required this.buttonLabel,
@@ -15,6 +17,8 @@ class FilterModal extends StatelessWidget {
     required this.selectedOptions,
     required this.onChanged,
     super.key,
+    this.enabled = true,
+    this.disabledTooltip,
   });
 
   void _showMultiSelectDialog(BuildContext context) async {
@@ -97,16 +101,25 @@ class FilterModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.filter_alt),
-        label: Text(buttonLabel),
-        onPressed: () => _showMultiSelectDialog(context),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        ),
+    final button = ElevatedButton.icon(
+      icon: const Icon(Icons.filter_alt),
+      label: Text(buttonLabel),
+      onPressed: enabled ? () => _showMultiSelectDialog(context) : null,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
+    );
+
+    if (!enabled && (disabledTooltip != null && disabledTooltip!.isNotEmpty)) {
+      return Tooltip(
+        message: disabledTooltip!,
+        child: MouseRegion(cursor: SystemMouseCursors.basic, child: button),
+      );
+    }
+
+    return MouseRegion(
+      cursor: enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      child: button,
     );
   }
 }

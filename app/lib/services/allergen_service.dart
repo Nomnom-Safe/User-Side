@@ -12,6 +12,13 @@ class AllergenService {
   AllergenService([dynamic firestore])
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
+  /// Clears in-memory caches so the next read hits Firestore again.
+  void clearCache() {
+    _cachedAllergens = null;
+    _cachedIdToLabel = null;
+    _cachedLabelToId = null;
+  }
+
   /// Get list of Allergen objects
   Future<List<Allergen>> getAllergens() async {
     if (_cachedAllergens != null) return _cachedAllergens!;

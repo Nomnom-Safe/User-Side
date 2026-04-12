@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 import 'package:nomnom_safe/widgets/multi_select_checkbox_list.dart';
 
 class SignUpAllergenView extends StatefulWidget {
@@ -54,7 +55,7 @@ class _SignUpAllergenViewState extends State<SignUpAllergenView> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          allergenError = "Error loading allergens.";
+          allergenError = UserFeedbackMessages.loadAllergensFailed;
           isLoadingAllergens = false;
         });
       }

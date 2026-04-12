@@ -80,6 +80,8 @@ class _FakeFirestoreAdapter implements FirestoreAdapter {
 
 class _FakeAllergenService implements AllergenService {
   @override
+  void clearCache() {}
+  @override
   Future<List<Allergen>> getAllergens() async => [];
 
   @override

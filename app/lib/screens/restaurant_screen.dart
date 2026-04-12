@@ -5,6 +5,7 @@ import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/widgets/restaurant_link.dart';
 import 'package:nomnom_safe/nav/nav_utils.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 /// Screen displaying detailed information about a specific restaurant
 class RestaurantScreen extends StatefulWidget {
@@ -45,13 +46,16 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       );
       if (mounted) {
         setState(() {
-          address = result ?? 'Unknown';
+          final r = result?.trim();
+          address = (r == null || r.isEmpty || r == 'Unknown')
+              ? Restaurant.unavailableDisplay
+              : r;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          address = 'Could not load address';
+          address = UserFeedbackMessages.loadAddressFailed;
         });
       }
     }
@@ -145,7 +149,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          ...widget.restaurant.hours.map(
+          ...widget.restaurant.displayHourLines.map(
             (line) => Text(line, style: Theme.of(context).textTheme.bodySmall),
           ),
           // Address
@@ -160,7 +164,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              'Phone: ${widget.restaurant.phone}',
+              'Phone: ${widget.restaurant.displayPhone}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -172,9 +176,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
               const Text('Website: '),
               widget.restaurant.hasWebsite
                   ? RestaurantLink(url: widget.restaurant.website)
-                  : const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text('none'),
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(Restaurant.unavailableDisplay),
                     ),
             ],
           ),

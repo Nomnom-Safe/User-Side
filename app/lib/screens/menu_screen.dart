@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:nomnom_safe/providers/allergen_selection_provider.dart';
 import 'package:nomnom_safe/models/menu.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 class MenuScreen extends StatefulWidget {
   final Restaurant restaurant;
@@ -129,7 +130,7 @@ class _MenuScreenState extends State<MenuScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _menuError = 'Could not load menu. Please try again later.';
+          _menuError = UserFeedbackMessages.loadMenuFailed;
         });
       }
     } finally {
@@ -161,7 +162,7 @@ class _MenuScreenState extends State<MenuScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not load allergens.')),
+          SnackBar(content: Text(UserFeedbackMessages.loadAllergensFailed)),
         );
       }
     }
@@ -212,7 +213,7 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               Expanded(
                 child: Text(
-                  widget.restaurant.name,
+                  widget.restaurant.displayName,
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
@@ -284,8 +285,8 @@ class _MenuScreenState extends State<MenuScreen> {
             ],
           ),
         ),
-        // Filter description text
-        if (_selectedAllergenLabels.isNotEmpty)
+        // Filter description text (only when there are items to filter)
+        if (_selectedAllergenLabels.isNotEmpty && allMenuItems.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
