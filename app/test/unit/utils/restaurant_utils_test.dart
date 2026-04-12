@@ -39,5 +39,22 @@ void main() {
       expect(out.map((r) => r.id), containsAll(['1', '3']));
       expect(out.map((r) => r.id), isNot(contains('2')));
     });
+
+    test('extractAvailableCuisines maps empty cuisine to Not specified', () {
+      final list = [_make('1', 'Thai'), _make('2', ''), _make('3', '  ')];
+      final cuisines = extractAvailableCuisines(list);
+      expect(cuisines, ['Not specified', 'Thai']);
+    });
+
+    test(
+      'filterRestaurantsByCuisine matches Not specified for empty cuisine',
+      () {
+        final list = [_make('1', 'A'), _make('2', ''), _make('3', 'B')];
+        final out = filterRestaurantsByCuisine(list, [
+          Restaurant.cuisineNotSpecifiedDisplay,
+        ]);
+        expect(out.map((r) => r.id), ['2']);
+      },
+    );
   });
 }

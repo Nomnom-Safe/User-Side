@@ -15,5 +15,8 @@ abstract final class UserFeedbackMessages {
   static const String loadMenuFailed =
       "Couldn't load the menu. Check your connection and try again.";
 
+  static const String menuNoItemsListed =
+      "This restaurant doesn't have any menu items listed yet.";
+
   static const String loadAddressFailed = "Couldn't load address.";
 }

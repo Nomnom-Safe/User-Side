@@ -70,7 +70,7 @@ void main() {
       disclaimers: [],
     );
     expect(r.displayName, Restaurant.unavailableDisplay);
-    expect(r.displayCuisine, Restaurant.unavailableDisplay);
+    expect(r.displayCuisine, Restaurant.cuisineNotSpecifiedDisplay);
     expect(r.displayPhone, Restaurant.unavailableDisplay);
     expect(r.displayHourLines, [
       Restaurant.unavailableDisplay,

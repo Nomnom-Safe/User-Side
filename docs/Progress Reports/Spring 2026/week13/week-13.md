@@ -19,17 +19,19 @@ footer: Capstone Project Week 13 Progress Report - Anna Dinius
 ## Week 13 Milestones Completed (3/3)
 
 ✅ Fix MCP access, audit Firestore collections, update models for any schema changes, add null-safety to all `fromJson`
-✅ Fix errors and bugs from Section 2 of `demo_preparation.md`
-✅ Fix edge cases from Section 6 of `demo_preparation.md`
+✅ Fix errors and bugs (as specified in Section 2 of `demo_preparation.md`)
+✅ Fix edge cases (as specified in Section 6 of `demo_preparation.md`)
+
+> For more detailed progress information, see `week-13-detailed.md`.
 
 ---
 
 ## LoC Summary
 
-- **Total**: 8,541
+- **Total**: 8,582
 - **Counting rules**: Excludes empty lines and comment-only lines. Inline comments on code lines are still counted.
 - **Files scanned**: All files under `lib` and `test` and their subdirectories.
-- See `week13/loc-breakdown.md` for LoC per file
+- For LoC per file, see `week13/loc-breakdown.md`.
 
 ---
 

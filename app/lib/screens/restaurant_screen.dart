@@ -6,6 +6,7 @@ import 'package:nomnom_safe/widgets/restaurant_link.dart';
 import 'package:nomnom_safe/nav/nav_utils.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
 import 'package:nomnom_safe/utils/user_feedback_messages.dart';
+import 'package:nomnom_safe/services/service_utils.dart';
 
 /// Screen displaying detailed information about a specific restaurant
 class RestaurantScreen extends StatefulWidget {
@@ -29,14 +30,18 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   late AddressService _addressService;
   late AllergenService _allergenService;
   List<String> _dietLabels = [];
+  bool _startedLoads = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _addressService = widget.addressService ?? AddressService();
-    _allergenService = widget.allergenService ?? AllergenService();
-    _loadAddress();
-    _loadDiets();
+    _allergenService = widget.allergenService ?? getAllergenService(context);
+    if (!_startedLoads) {
+      _startedLoads = true;
+      _loadAddress();
+      _loadDiets();
+    }
   }
 
   void _loadAddress() async {

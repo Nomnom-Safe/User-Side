@@ -81,6 +81,25 @@
 
 - **Missing error handling** — Added try/catch to `RestaurantScreen._loadAddress()` and `_loadDiets()`, and `HomeScreen._fetchUnfilteredRestaurants()` / `_applyAllergenFilter()` so network failures show an error message instead of an infinite spinner.
 
+- **Cuisine: “Not specified” (filter, card, detail)**
+  - **`Restaurant`** (`app/lib/models/restaurant.dart`): Added `cuisineNotSpecifiedDisplay` (`'Not specified'`). **`displayCuisine`** now uses that when `cuisine` is empty/whitespace (other fields still use **`unavailableDisplay`** where applicable).
+  - **`restaurant_utils.dart`**: Added **`cuisineFilterLabel`**, and **`extractAvailableCuisines`** / **`filterRestaurantsByCuisine`** use it so blank cuisines collapse to **`Not specified`** for options and selection (no empty chip).
+
+- **Menu screen**
+  - "**Showing menu items…**" only when **`_selectedAllergenLabels.isNotEmpty && filteredMenuItems.isNotEmpty`**, so it hides when filters leave **no visible rows**.
+  - **Empty menu vs filtered empty**: If there is a menu document but **`allMenuItems` is empty**, the app shows **`UserFeedbackMessages.menuNoItemsListed`** (`"This restaurant doesn't have any menu items listed yet."`). If there are items but filters remove all of them, it still shows "**No menu items match your current filters.**"
+
+- **Allergens from shared cache**
+  - **`main.dart`**: **`EditProfileController`** is created with **`allergenService: context.read<AllergenService>()`** so edit profile uses the same instance (and cache) as the rest of the app.
+  - **`SignUpAllergenView`**: Loads allergens via **`getAllergenService(context)`** in **`didChangeDependencies`** instead of **`AllergenService()`**.
+  - **`RestaurantScreen`**: Resolves **`AllergenService`** with **`getAllergenService(context)`** when not injected (same pattern as **`MenuScreen`**), with loads started once from **`didChangeDependencies`**.
+
+- **Tests**
+  - **`restaurant_model_test`**: Empty cuisine expects **`cuisineNotSpecifiedDisplay`**.
+  - **`restaurant_utils_test`**: Covers empty/whitespace cuisine in extract + filter with **`Not specified`**.
+
+`flutter test` completed successfully (exit code 0).
+
 ## Task #6 – Edge cases (`docs/demo_preparation.md` §6)
 
 Work tracked the demo doc’s edge-case list and a few related gaps. User-facing failures use a single vocabulary from `app/lib/utils/user_feedback_messages.dart` (`UserFeedbackMessages`) where appropriate, plus existing `ErrorBanner` / inline errors for form flows. No database or Firestore schema changes were made.

@@ -285,8 +285,8 @@ class _MenuScreenState extends State<MenuScreen> {
             ],
           ),
         ),
-        // Filter description text (only when there are items to filter)
-        if (_selectedAllergenLabels.isNotEmpty && allMenuItems.isNotEmpty)
+        // Filter description text (only when allergen filter is on and results are visible)
+        if (_selectedAllergenLabels.isNotEmpty && filteredMenuItems.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -310,6 +310,13 @@ class _MenuScreenState extends State<MenuScreen> {
               : restaurantMenu == null
               ? const Center(
                   child: Text('No menu available for this restaurant.'),
+                )
+              : allMenuItems.isEmpty
+              ? Center(
+                  child: Text(
+                    UserFeedbackMessages.menuNoItemsListed,
+                    textAlign: TextAlign.center,
+                  ),
                 )
               : filteredMenuItems.isEmpty
               ? const Center(

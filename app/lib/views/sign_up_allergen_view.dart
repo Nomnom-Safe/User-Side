@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
+import 'package:nomnom_safe/services/service_utils.dart';
 import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 import 'package:nomnom_safe/widgets/multi_select_checkbox_list.dart';
 
@@ -24,23 +25,28 @@ class SignUpAllergenView extends StatefulWidget {
 }
 
 class _SignUpAllergenViewState extends State<SignUpAllergenView> {
+  late AllergenService _allergenService;
   Map<String, String> allergenIdToLabel = {};
   Map<String, String> _allergenLabelToId = {};
   Set<String> _selectedAllergenLabels = {};
   bool isLoadingAllergens = true;
   String? allergenError;
+  bool _allergenFetchStarted = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_allergenFetchStarted) return;
+    _allergenFetchStarted = true;
+    _allergenService = getAllergenService(context);
     _loadAllergens();
   }
 
   Future<void> _loadAllergens() async {
     try {
-      final idToLabel = await AllergenService().getAllergenIdToLabelMap();
-      final labelToId = await AllergenService().getAllergenLabelToIdMap();
-      final selectedLabels = await AllergenService().idsToLabels(
+      final idToLabel = await _allergenService.getAllergenIdToLabelMap();
+      final labelToId = await _allergenService.getAllergenLabelToIdMap();
+      final selectedLabels = await _allergenService.idsToLabels(
         widget.selectedAllergenIds,
       );
 

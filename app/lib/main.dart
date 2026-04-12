@@ -152,6 +152,7 @@ class MyApp extends StatelessWidget {
                 body: ChangeNotifierProvider(
                   create: (context) => EditProfileController(
                     authProvider: context.read<AuthStateProvider>(),
+                    allergenService: context.read<AllergenService>(),
                   ),
                   child: const EditProfileScreen(),
                 ),

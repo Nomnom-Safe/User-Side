@@ -1,8 +1,8 @@
 # LOC Breakdown
 
-- **Total LOC:** 8,541
-- **Total production LOC:** 4,067
-- **Total test LOC:** 4,474
+- **Total LOC:** 8,582
+- **Total production LOC:** 4,093
+- **Total test LOC:** 4,489
 - **Total test files:** 63
 
 ## LOC Per File
@@ -10,14 +10,14 @@
 - `app\lib\controllers\edit_profile_controller.dart`: 130
 - `app\lib\controllers\profile_controller.dart`: 59
 - `app\lib\firebase_options.dart`: 70
-- `app\lib\main.dart`: 154
+- `app\lib\main.dart`: 155
 - `app\lib\models\address.dart`: 29
 - `app\lib\models\allergen.dart`: 8
 - `app\lib\models\menu.dart`: 28
 - `app\lib\models\menu_item.dart`: 37
 - `app\lib\models\profile_form_model.dart`: 42
 - `app\lib\models\profile_update_result.dart`: 10
-- `app\lib\models\restaurant.dart`: 89
+- `app\lib\models\restaurant.dart`: 90
 - `app\lib\models\user.dart`: 29
 - `app\lib\nav\nav_destination.dart`: 24
 - `app\lib\nav\nav_utils.dart`: 30
@@ -27,9 +27,9 @@
 - `app\lib\providers\auth_state_provider.dart`: 92
 - `app\lib\screens\edit_profile_screen.dart`: 64
 - `app\lib\screens\home_screen.dart`: 327
-- `app\lib\screens\menu_screen.dart`: 327
+- `app\lib\screens\menu_screen.dart`: 334
 - `app\lib\screens\profile_screen.dart`: 79
-- `app\lib\screens\restaurant_screen.dart`: 193
+- `app\lib\screens\restaurant_screen.dart`: 198
 - `app\lib\screens\sign_in_screen.dart`: 192
 - `app\lib\screens\sign_up_screen.dart`: 135
 - `app\lib\services\adapters\auth_adapter.dart`: 63
@@ -44,14 +44,14 @@
 - `app\lib\theme\theme_constants.dart`: 12
 - `app\lib\utils\allergen_utils.dart`: 16
 - `app\lib\utils\form_validation_utils.dart`: 35
-- `app\lib\utils\restaurant_utils.dart`: 15
-- `app\lib\utils\user_feedback_messages.dart`: 13
+- `app\lib\utils\restaurant_utils.dart`: 19
+- `app\lib\utils\user_feedback_messages.dart`: 15
 - `app\lib\views\allergen_section.dart`: 41
 - `app\lib\views\edit_profile_body.dart`: 86
 - `app\lib\views\edit_profile_view.dart`: 102
 - `app\lib\views\profile_header.dart`: 26
 - `app\lib\views\sign_up_account_view.dart`: 143
-- `app\lib\views\sign_up_allergen_view.dart`: 106
+- `app\lib\views\sign_up_allergen_view.dart`: 112
 - `app\lib\views\update_password_view.dart`: 108
 - `app\lib\views\verify_current_password_view.dart`: 57
 - `app\lib\widgets\back_button_row.dart`: 21
@@ -102,7 +102,7 @@
 - `app\test\unit\services\service_utils_test.dart`: 26
 - `app\test\unit\utils\allergen_utils_test.dart`: 32
 - `app\test\unit\utils\form_validation_utils_test.dart`: 41
-- `app\test\unit\utils\restaurant_utils_test.dart`: 38
+- `app\test\unit\utils\restaurant_utils_test.dart`: 53
 - `app\test\widget\app_flow_test.dart`: 208
 - `app\test\widget\screens\edit_profile_screen_test.dart`: 65
 - `app\test\widget\screens\home_screen_test.dart`: 63

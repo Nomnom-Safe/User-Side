@@ -4,6 +4,9 @@ class Restaurant {
   /// Shown in the UI when a field is missing, empty, or not meaningful.
   static const String unavailableDisplay = 'Unavailable';
 
+  /// Cuisine filter and labels when [cuisine] is empty (distinct from [unavailableDisplay]).
+  static const String cuisineNotSpecifiedDisplay = 'Not specified';
+
   final String id;
   final String name;
   final String addressId;
@@ -86,9 +89,10 @@ class Restaurant {
     return t;
   }
 
+  /// Cuisine line on cards and detail screens when [cuisine] is absent.
   String get displayCuisine {
     final t = cuisine.trim();
-    return t.isEmpty ? unavailableDisplay : t;
+    return t.isEmpty ? cuisineNotSpecifiedDisplay : t;
   }
 
   String get displayPhone {
