@@ -509,13 +509,13 @@ In `VerifyCurrentPasswordView`, if the user enters the wrong password, the error
 
 ### Action Items
 
-- [ ] Add bounds check to `Restaurant.todayHours`
-- [ ] Show distinct message when restaurant has no menu
-- [ ] Handle null user in `EditProfileScreen` build
-- [ ] Inform user about email verification
-- [ ] Replace fragile item type string manipulation with a proper map
-- [ ] Add loading state to delete account dialog
-- [ ] Clear password field on failed verification
+- [x] Add bounds check to `Restaurant.todayHours`
+- [x] Show distinct message when restaurant has no menu
+- [x] Handle null user in `EditProfileScreen` build
+- [x] Inform user about email verification
+- [x] Replace fragile item type string manipulation with a proper map
+- [x] Add loading state to delete account dialog
+- [x] Clear password field on failed verification
 
 ---
 
