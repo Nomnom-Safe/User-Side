@@ -154,20 +154,32 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     }
   }
 
-  /// Fetch all restaurants without any filters
+  String? _restaurantError;
+
   void _fetchUnfilteredRestaurants() async {
     setState(() {
       isLoadingRestaurants = true;
+      _restaurantError = null;
     });
 
-    final allRestaurants = await _restaurantService.getAllRestaurants();
-    if (mounted) {
-      setState(() {
-        unfilteredRestaurants = allRestaurants;
-        restaurantList = allRestaurants;
-        _extractAvailableCuisines();
-        isLoadingRestaurants = false;
-      });
+    try {
+      final allRestaurants = await _restaurantService.getAllRestaurants();
+      if (mounted) {
+        setState(() {
+          unfilteredRestaurants = allRestaurants;
+          restaurantList = allRestaurants;
+          _extractAvailableCuisines();
+          isLoadingRestaurants = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _restaurantError =
+              'Could not load restaurants. Please try again later.';
+          isLoadingRestaurants = false;
+        });
+      }
     }
   }
 
@@ -187,11 +199,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     });
   }
 
-  /// Apply the allergen filter to the restaurant list
   Future<void> _applyAllergenFilter() async {
     if (_selectedAllergenIds.isEmpty) {
       setState(() {
         restaurantList = unfilteredRestaurants;
+        _restaurantError = null;
         _extractAvailableCuisines();
       });
       return;
@@ -199,20 +211,31 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
     setState(() {
       isLoadingRestaurants = true;
+      _restaurantError = null;
     });
 
-    final filteredRestaurants = await _restaurantService
-        .filterRestaurantsFromList(
-          unfilteredRestaurants,
-          _selectedAllergenIds.toList(),
-        );
+    try {
+      final filteredRestaurants = await _restaurantService
+          .filterRestaurantsFromList(
+            unfilteredRestaurants,
+            _selectedAllergenIds.toList(),
+          );
 
-    if (mounted) {
-      setState(() {
-        restaurantList = filteredRestaurants;
-        _extractAvailableCuisines();
-        isLoadingRestaurants = false;
-      });
+      if (mounted) {
+        setState(() {
+          restaurantList = filteredRestaurants;
+          _extractAvailableCuisines();
+          isLoadingRestaurants = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _restaurantError =
+              'Could not filter restaurants. Please try again later.';
+          isLoadingRestaurants = false;
+        });
+      }
     }
   }
 
@@ -294,13 +317,19 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         // Make the restaurant list take up remaining space
         Expanded(
           child: isLoadingRestaurants
-              ? // Show a loading spinner while restaurants are loading
-                const Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
+              : _restaurantError != null
+              ? Center(
+                  child: Text(
+                    _restaurantError!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                )
               : restaurantList.isEmpty
-              ? // No restaurants match the filters
-                const Center(child: Text('No restaurants match your filters'))
-              : // Restaurant list
-                ListView.builder(
+              ? const Center(child: Text('No restaurants match your filters.'))
+              : ListView.builder(
                   padding: const EdgeInsets.only(bottom: 12),
                   itemCount: restaurantList.length,
                   itemBuilder: (context, index) {

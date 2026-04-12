@@ -48,3 +48,35 @@
 ## Database Updates
 
 - Removed all unnamed businesses from the database and all connected data
+
+## Bug Fixes & Errors
+
+### Doc-listed bugs (2.1 - 2.13)
+
+**2.1** `AuthStateProvider._auth_serviceOrCreate()` — Removed the non-standard helper entirely; all methods now use the inline `(_authService ??= AuthService())` pattern consistently.
+
+**2.2 & 2.3** `AuthStateProvider.signUp()` and `signIn()` silently discarded errors — Both now capture the `String?` return value from `AuthService` and throw an `Exception` if non-null. The `SignInScreen` and `SignUpScreen` already had catch blocks that display the error to the user.
+
+**2.4 - 2.9** Model null-safety and `toJson` mismatches — Already fixed in the previous session (confirmed still passing).
+
+**2.10** `RestaurantScreen` not scrollable — Replaced the outer `Padding` with `SingleChildScrollView` so long content won't overflow.
+
+**2.11** `deleteAccount` dialog wrong context — Changed `builder: (_)` to `builder: (dialogContext)` and updated both `Navigator.pop` calls to use `dialogContext`.
+
+**2.12** `AuthService.signIn` double Firestore read — Removed the redundant re-fetch after `loadCurrentUser()`. Now only calls `loadCurrentUser()` and checks `_currentUser`.
+
+**2.13** Duplicate validation in `auth_utils.dart` — Deleted `auth_utils.dart` and its test since only `FormValidators` in `form_validation_utils.dart` is used anywhere.
+
+### Additional bugs found and fixed
+
+- **Standardized error display** — Replaced 4 hand-rolled inline `Container` error widgets (in `sign_in_screen.dart`, `sign_up_account_view.dart`, `verify_current_password_view.dart`, `update_password_view.dart`) with the existing `ErrorBanner` widget for consistency.
+
+- **Inconsistent validation SnackBar messages** — `update_password_view.dart` said "Please correct the highlighted fields." while all others said "Please fix the errors above." Unified to the latter.
+
+- **Dead code in `SignInScreen._handleSignIn`** — After making `signIn` throw on error, the `else` branch checking `isSignedIn` was unreachable. Cleaned it up so the success path simply navigates.
+
+- **Fragile item-type filter** — The `MenuScreen` used `RegExp('s$')` to strip trailing 's' from display labels for comparison. Replaced with an explicit `_displayToItemType` map (`'Sides' → 'side'`, `'Entrees' → 'entree'`, etc.).
+
+- **Menu screen: indistinguishable empty states** — Added distinct messages for error ("Could not load menu..."), no menu ("No menu available for this restaurant."), and no items matching filters ("No menu items match your current filters.").
+
+- **Missing error handling** — Added try/catch to `RestaurantScreen._loadAddress()` and `_loadDiets()`, and `HomeScreen._fetchUnfilteredRestaurants()` / `_applyAllergenFilter()` so network failures show an error message instead of an infinite spinner.

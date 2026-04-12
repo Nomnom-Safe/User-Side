@@ -39,7 +39,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
   List<MenuItem> filteredMenuItems = [];
   List<MenuItem> allMenuItems = [];
-  // Item type filter state
+
   static const List<String> availableItemTypes = [
     'Sides',
     'Entrees',
@@ -47,10 +47,18 @@ class _MenuScreenState extends State<MenuScreen> {
     'Drinks',
     'Appetizers',
   ];
+  static const Map<String, String> _displayToItemType = {
+    'Sides': 'side',
+    'Entrees': 'entree',
+    'Desserts': 'dessert',
+    'Drinks': 'drink',
+    'Appetizers': 'appetizer',
+  };
   List<String> selectedItemTypes = [];
   Menu? restaurantMenu;
 
   bool isLoadingMenu = true;
+  String? _menuError;
 
   @override
   void didChangeDependencies() {
@@ -103,28 +111,26 @@ class _MenuScreenState extends State<MenuScreen> {
     _fetchMenuItems();
   }
 
-  /// Fetch menu and menu items for the restaurant
   Future<void> _fetchMenuItems() async {
     setState(() {
       isLoadingMenu = true;
+      _menuError = null;
     });
 
     try {
-      // First get the menu for this restaurant
       restaurantMenu = await _menuService.getMenuByRestaurantId(
         widget.restaurant.id,
       );
 
       if (restaurantMenu != null) {
-        // Then get all menu items for that menu
         allMenuItems = await _menuService.getMenuItems(restaurantMenu!.id);
         _updateFilteredMenuItems();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading menu: ${e.toString()}')),
-        );
+        setState(() {
+          _menuError = 'Could not load menu. Please try again later.';
+        });
       }
     } finally {
       if (mounted) {
@@ -154,9 +160,9 @@ class _MenuScreenState extends State<MenuScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not load allergens.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not load allergens.')),
+        );
       }
     }
   }
@@ -175,14 +181,15 @@ class _MenuScreenState extends State<MenuScreen> {
         }).toList();
       }
 
-      // Apply item type filtering (include only items whose itemType is selected)
       if (selectedItemTypes.isNotEmpty) {
-        results = results.where((item) {
-          // Convert plural capitalized display names to singular lowercase for comparison
-          return selectedItemTypes
-              .map((type) => type.toLowerCase().replaceAll(RegExp('s\$'), ''))
-              .contains(item.itemType.toLowerCase());
-        }).toList();
+        final activeTypes = selectedItemTypes
+            .map((t) => _displayToItemType[t])
+            .where((t) => t != null)
+            .cast<String>()
+            .toSet();
+        results = results
+            .where((item) => activeTypes.contains(item.itemType.toLowerCase()))
+            .toList();
       }
 
       filteredMenuItems = results;
@@ -290,9 +297,22 @@ class _MenuScreenState extends State<MenuScreen> {
         Expanded(
           child: isLoadingMenu
               ? const Center(child: CircularProgressIndicator())
+              : _menuError != null
+              ? Center(
+                  child: Text(
+                    _menuError!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                )
+              : restaurantMenu == null
+              ? const Center(
+                  child: Text('No menu available for this restaurant.'),
+                )
               : filteredMenuItems.isEmpty
               ? const Center(
-                  child: Text('No menu items match your allergen filters'),
+                  child: Text('No menu items match your current filters.'),
                 )
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(

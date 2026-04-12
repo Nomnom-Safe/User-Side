@@ -10,7 +10,7 @@ Future<bool?> showDeleteAccountDialog(
 
   return showDialog<bool>(
     context: context,
-    builder: (_) {
+    builder: (dialogContext) {
       final passwordController = TextEditingController();
 
       return AlertDialog(
@@ -33,17 +33,16 @@ Future<bool?> showDeleteAccountDialog(
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
-              // Run validation before attempting deletion
               if (formKey.currentState!.validate()) {
                 final success = await controller.deleteAccount(
                   passwordController.text,
                 );
-                Navigator.pop(context, success); // return true/false directly
+                Navigator.pop(dialogContext, success);
               }
             },
             child: const Text('Delete'),

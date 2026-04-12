@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/utils/form_validation_utils.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
 import 'package:nomnom_safe/widgets/password_field.dart';
 
 class UpdatePasswordView extends StatelessWidget {
@@ -39,19 +40,7 @@ class UpdatePasswordView extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 30),
-          if (errorMessage != null)
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.error.withAlpha(25),
-                border: Border.all(color: Theme.of(context).colorScheme.error),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                errorMessage!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            ),
+          if (errorMessage != null) ErrorBanner(errorMessage!),
           if (errorMessage != null) const SizedBox(height: 16),
           PasswordField(
             controller: newPasswordController,
@@ -95,9 +84,7 @@ class UpdatePasswordView extends StatelessWidget {
                           if (!isValid) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text(
-                                  'Please correct the highlighted fields.',
-                                ),
+                                content: Text('Please fix the errors above.'),
                               ),
                             );
                             return;

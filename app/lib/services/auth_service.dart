@@ -105,18 +105,8 @@ class AuthService {
 
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-
-      // After sign-in, load the current user profile
       await loadCurrentUser();
-
-      final fbUser = _auth.currentUser;
-      final uid = fbUser?.uid;
-      if (uid == null) return 'User profile not found';
-
-      final userData = await _firestore.collection('users').doc(uid).get();
-      if (userData == null) return 'User profile not found';
-
-      _currentUser = User.fromJson({...userData, 'id': uid});
+      if (_currentUser == null) return 'User profile not found';
     } on fb_auth.FirebaseAuthException {
       return 'Error signing in.';
     }

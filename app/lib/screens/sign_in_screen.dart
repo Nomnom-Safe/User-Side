@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nomnom_safe/utils/form_validation_utils.dart';
 import 'package:nomnom_safe/widgets/text_form_field_with_controller.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
 import 'package:nomnom_safe/nav/route_tracker.dart';
 import 'package:nomnom_safe/widgets/password_field.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
@@ -56,35 +57,25 @@ class _SignInScreenState extends State<SignInScreen> with RouteAware {
       _errorMessage = null;
     });
 
-    final authStateProvider = context.read<AuthStateProvider>();
-
     try {
-      await authStateProvider.signIn(
+      await context.read<AuthStateProvider>().signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      // Determine success by checking provider state
-      final signedIn = authStateProvider.isSignedIn;
-      if (mounted && signedIn) {
-        // Navigate back to home screen and trigger AppBar rebuild
+      if (mounted) {
         replaceIfNotCurrent(
           context,
           AppRoutes.home,
           blockIfCurrent: [AppRoutes.home],
         );
-      } else {
-        // Invalid credentials — show snackbar and don't navigate
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid email or password.')),
-          );
-        }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceFirst('Exception: ', '');
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -122,19 +113,7 @@ class _SignInScreenState extends State<SignInScreen> with RouteAware {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          if (_errorMessage != null)
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.error.withAlpha(25),
-                border: Border.all(color: Theme.of(context).colorScheme.error),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                _errorMessage!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            ),
+          if (_errorMessage != null) ErrorBanner(_errorMessage!),
           if (_errorMessage != null) const SizedBox(height: 16),
           Form(
             key: _formKey,

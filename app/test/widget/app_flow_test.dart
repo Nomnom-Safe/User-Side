@@ -238,6 +238,6 @@ void main() {
     // When user has allergens selected, a descriptive header is shown
     expect(find.textContaining('The following restaurants'), findsOneWidget);
     // Filtered result is empty -> message indicating no restaurants
-    expect(find.text('No restaurants match your filters'), findsOneWidget);
+    expect(find.text('No restaurants match your filters.'), findsOneWidget);
   });
 }

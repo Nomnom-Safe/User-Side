@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/utils/form_validation_utils.dart';
 import 'package:nomnom_safe/nav/nav_utils.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
 import 'package:nomnom_safe/widgets/password_field.dart';
 import 'package:nomnom_safe/widgets/text_form_field_with_controller.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
@@ -43,19 +44,7 @@ class _SignUpAccountViewState extends State<SignUpAccountView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Error Message
-        if (widget.errorMessage != null)
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.error.withAlpha(25),
-              border: Border.all(color: Theme.of(context).colorScheme.error),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              widget.errorMessage!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          ),
+        if (widget.errorMessage != null) ErrorBanner(widget.errorMessage!),
         if (widget.errorMessage != null) const SizedBox(height: 16),
         Form(
           key: widget.formKey,

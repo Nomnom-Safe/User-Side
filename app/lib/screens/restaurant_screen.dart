@@ -38,25 +38,38 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     _loadDiets();
   }
 
-  /// Load the restaurant's address from Firestore
   void _loadAddress() async {
-    final result = await _addressService.getRestaurantAddress(
-      widget.restaurant.addressId,
-    );
-    if (mounted) {
-      setState(() {
-        address = result;
-      });
+    try {
+      final result = await _addressService.getRestaurantAddress(
+        widget.restaurant.addressId,
+      );
+      if (mounted) {
+        setState(() {
+          address = result ?? 'Unknown';
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          address = 'Could not load address';
+        });
+      }
     }
   }
 
   void _loadDiets() async {
     if (widget.restaurant.diets.isEmpty) return;
-    final labels = await _allergenService.idsToLabels(widget.restaurant.diets);
-    if (mounted) {
-      setState(() {
-        _dietLabels = labels;
-      });
+    try {
+      final labels = await _allergenService.idsToLabels(
+        widget.restaurant.diets,
+      );
+      if (mounted) {
+        setState(() {
+          _dietLabels = labels;
+        });
+      }
+    } catch (_) {
+      // Diets are non-critical; silently degrade
     }
   }
 
@@ -84,7 +97,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

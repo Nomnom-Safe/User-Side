@@ -19,7 +19,7 @@ class AuthStateProvider extends ChangeNotifier {
     required String confirmPassword,
     List<String>? allergies,
   }) async {
-    await (_authService ??= AuthService()).signUp(
+    final error = await (_authService ??= AuthService()).signUp(
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -27,21 +27,23 @@ class AuthStateProvider extends ChangeNotifier {
       confirmPassword: confirmPassword,
       allergies: allergies,
     );
+    if (error != null) throw Exception(error);
     notifyListeners();
   }
 
   /// Sign in and notify listeners
   Future<void> signIn({required String email, required String password}) async {
-    await (_authService ??= AuthService()).signIn(
+    final error = await (_authService ??= AuthService()).signIn(
       email: email,
       password: password,
     );
+    if (error != null) throw Exception(error);
     notifyListeners();
   }
 
   /// Sign out and notify listeners
   Future<void> signOut() async {
-    await (_auth_serviceOrCreate()).signOut();
+    await (_authService ??= AuthService()).signOut();
     notifyListeners();
   }
 
@@ -107,7 +109,4 @@ class AuthStateProvider extends ChangeNotifier {
 
   /// Get current user (for profile display)
   User? get currentUser => (_authService ??= AuthService()).currentUser;
-
-  // helper that ensures typed access in a couple of places
-  AuthService _auth_serviceOrCreate() => (_authService ??= AuthService());
 }

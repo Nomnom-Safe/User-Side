@@ -281,11 +281,11 @@ These are the Dart models and their expected Firestore collections. Once you hav
 
 ### Action Items
 
-- [ ] Connect to Firebase via MCP or Firebase console
-- [ ] Run through each collection and compare fields vs. model
-- [ ] Update models for any new/renamed/removed fields
-- [ ] Add null-safety defaults to all `fromJson` constructors
-- [ ] Test that data loads correctly after model changes
+- [x] Connect to Firebase via MCP or Firebase console
+- [x] Run through each collection and compare fields vs. model
+- [x] Update models for any new/renamed/removed fields
+- [x] Add null-safety defaults to all `fromJson` constructors
+- [x] Test that data loads correctly after model changes
 
 ---
 

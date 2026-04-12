@@ -178,7 +178,7 @@ void main() {
           find.textContaining('The following restaurants'),
           findsOneWidget,
         );
-        expect(find.text('No restaurants match your filters'), findsOneWidget);
+        expect(find.text('No restaurants match your filters.'), findsOneWidget);
       },
     );
 
