@@ -15,11 +15,11 @@ class Address {
 
   /// Create an Address object from JSON data
   factory Address.fromJson(Map<String, dynamic> json) => Address(
-    id: json['id'],
-    street: json['street'],
-    city: json['city'],
-    state: json['state'],
-    zipCode: json['zipCode'],
+    id: json['id'] ?? '',
+    street: json['street'] ?? '',
+    city: json['city'] ?? '',
+    state: json['state'] ?? '',
+    zipCode: json['zipCode'] ?? '',
   );
 
   /// Convert an Address object to JSON data

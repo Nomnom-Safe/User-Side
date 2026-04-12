@@ -15,10 +15,10 @@ class User {
 
   /// Create a User object from JSON data
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json['id'],
-    firstName: json['first_name'],
-    lastName: json['last_name'],
-    email: json['email'],
+    id: json['id'] ?? '',
+    firstName: json['first_name'] ?? '',
+    lastName: json['last_name'] ?? '',
+    email: json['email'] ?? '',
     allergies: List<String>.from(json['allergies'] ?? []),
   );
 

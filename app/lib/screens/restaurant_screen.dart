@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/models/restaurant.dart';
 import 'package:nomnom_safe/services/address_service.dart';
+import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/widgets/restaurant_link.dart';
 import 'package:nomnom_safe/nav/nav_utils.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
@@ -9,11 +10,13 @@ import 'package:nomnom_safe/nav/route_constants.dart';
 class RestaurantScreen extends StatefulWidget {
   final Restaurant restaurant;
   final AddressService? addressService;
+  final AllergenService? allergenService;
 
   const RestaurantScreen({
     super.key,
     required this.restaurant,
     this.addressService,
+    this.allergenService,
   });
 
   @override
@@ -23,12 +26,16 @@ class RestaurantScreen extends StatefulWidget {
 class _RestaurantScreenState extends State<RestaurantScreen> {
   String? address;
   late AddressService _addressService;
+  late AllergenService _allergenService;
+  List<String> _dietLabels = [];
 
   @override
   void initState() {
     super.initState();
     _addressService = widget.addressService ?? AddressService();
+    _allergenService = widget.allergenService ?? AllergenService();
     _loadAddress();
+    _loadDiets();
   }
 
   /// Load the restaurant's address from Firestore
@@ -39,6 +46,16 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     if (mounted) {
       setState(() {
         address = result;
+      });
+    }
+  }
+
+  void _loadDiets() async {
+    if (widget.restaurant.diets.isEmpty) return;
+    final labels = await _allergenService.idsToLabels(widget.restaurant.diets);
+    if (mounted) {
+      setState(() {
+        _dietLabels = labels;
       });
     }
   }
@@ -148,6 +165,30 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     ),
             ],
           ),
+          // Dietary accommodations
+          if (_dietLabels.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Dietary Accommodations:',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: _dietLabels
+                          .map((label) => Chip(label: Text(label)))
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           // Disclaimer(s)
           if (widget.restaurant.disclaimers.isNotEmpty)
             _buildDisclaimers(context),

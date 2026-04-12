@@ -12,7 +12,6 @@ Restaurant _makeRestaurant() => Restaurant(
   phone: '111',
   cuisine: 'Test',
   disclaimers: [],
-  logoUrl: null,
 );
 
 void main() {

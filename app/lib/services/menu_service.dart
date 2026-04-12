@@ -9,12 +9,12 @@ class MenuService {
   MenuService([dynamic firestore])
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  /// Fetch a menu by restaurant ID
+  /// Fetch a menu by business (restaurant) ID
   Future<Menu?> getMenuByRestaurantId(String restaurantId) async {
     try {
       final menuSnapshot = await _firestore
           .collection('menus')
-          .where('restaurant_id', isEqualTo: restaurantId)
+          .where('business_id', isEqualTo: restaurantId)
           .limit(1)
           .get();
 

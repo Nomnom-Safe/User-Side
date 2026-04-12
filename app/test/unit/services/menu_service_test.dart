@@ -15,7 +15,7 @@ void main() {
     test('getMenuItems returns empty list when no menu_items', () async {
       final fs = FakeFirestore({
         'menus': [
-          FakeDocument('m1', {'id': 'm1', 'restaurantId': 'r1'}),
+          FakeDocument('m1', {'id': 'm1', 'business_id': 'r1'}),
         ],
         'menu_items': [],
       });
@@ -26,7 +26,7 @@ void main() {
 
     test('getMenuItems parses menu items correctly', () async {
       final menus = [
-        FakeDocument('m1', {'id': 'm1', 'restaurant_id': 'r1'}),
+        FakeDocument('m1', {'id': 'm1', 'business_id': 'r1'}),
       ];
       final menuItems = [
         FakeDocument('i1', {

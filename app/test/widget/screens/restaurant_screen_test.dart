@@ -2,11 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/screens/restaurant_screen.dart';
 import 'package:nomnom_safe/models/restaurant.dart';
+import 'package:nomnom_safe/models/allergen.dart';
 import 'package:nomnom_safe/services/address_service.dart';
+import 'package:nomnom_safe/services/allergen_service.dart';
 
 class FakeAddressService implements AddressService {
   @override
   Future<String?> getRestaurantAddress(String addressId) async => '123 Test St';
+}
+
+class FakeAllergenService implements AllergenService {
+  @override
+  Future<List<Allergen>> getAllergens() async => [];
+  @override
+  Future<List<String>> getAllergenLabels() async => [];
+  @override
+  Future<List<String>> getAllergenIds() async => [];
+  @override
+  Future<Map<String, String>> getAllergenIdToLabelMap() async => {};
+  @override
+  Future<Map<String, String>> getAllergenLabelToIdMap() async => {};
+  @override
+  Future<List<String>> idsToLabels(List<String> ids) async => [];
+  @override
+  Future<List<String>> labelsToIds(List<String> labels) async => [];
+  @override
+  Future<String?> getIdForLabel(String label) async => null;
+  @override
+  Future<String?> getLabelForId(String id) async => null;
 }
 
 Restaurant _makeRestaurant() => Restaurant(
@@ -18,7 +41,6 @@ Restaurant _makeRestaurant() => Restaurant(
   phone: '555-0000',
   cuisine: 'Test',
   disclaimers: [],
-  logoUrl: null,
 );
 
 void main() {
@@ -32,13 +54,13 @@ void main() {
           body: RestaurantScreen(
             restaurant: r,
             addressService: FakeAddressService(),
+            allergenService: FakeAllergenService(),
           ),
         ),
       ),
     );
 
     expect(find.text('Testaurant'), findsOneWidget);
-    // Address fetch runs async; initial build should display Loading...
     expect(find.textContaining('Address:'), findsOneWidget);
     expect(find.textContaining('Loading'), findsOneWidget);
   });

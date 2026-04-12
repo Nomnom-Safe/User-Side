@@ -32,7 +32,7 @@ void main() {
             'logoUrl': null,
           }),
         ];
-        final fs = FakeFirestore({'restaurants': restaurants, 'menus': []});
+        final fs = FakeFirestore({'businesses': restaurants, 'menus': []});
         final service = RestaurantService(fs);
         final all = await service.getAllRestaurants();
         expect(all.length, 2);
@@ -56,7 +56,7 @@ void main() {
           }),
         ];
         final menus = [
-          FakeDocument('m1', {'id': 'm1', 'restaurant_id': 'r1'}),
+          FakeDocument('m1', {'id': 'm1', 'business_id': 'r1'}),
         ];
         final menuItems = [
           FakeDocument('i1', {
@@ -69,7 +69,7 @@ void main() {
           }),
         ];
         final fs = FakeFirestore({
-          'restaurants': restaurants,
+          'businesses': restaurants,
           'menus': menus,
           'menu_items': menuItems,
         });

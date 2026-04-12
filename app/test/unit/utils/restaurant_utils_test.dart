@@ -11,7 +11,6 @@ Restaurant _make(String id, String cuisine) => Restaurant(
   phone: '',
   cuisine: cuisine,
   disclaimers: [],
-  logoUrl: null,
 );
 
 void main() {

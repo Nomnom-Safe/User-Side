@@ -13,10 +13,62 @@ void main() {
       'cuisine': 'c',
       'disclaimers': [],
       'logoUrl': null,
+      'menu_id': 'menu1',
+      'allergens': ['a1'],
+      'diets': ['d1'],
     };
     final r = Restaurant.fromJson(data);
     expect(r.id, 'r1');
     expect(r.hasWebsite, true);
     expect(r.todayHours, isNotNull);
+    expect(r.menuId, 'menu1');
+    expect(r.allergens, ['a1']);
+    expect(r.diets, ['d1']);
+  });
+
+  test('Restaurant.toJson uses address_id key', () {
+    final r = Restaurant(
+      id: 'r1',
+      name: 'R1',
+      addressId: 'addr1',
+      website: '',
+      hours: [],
+      phone: '',
+      cuisine: '',
+      disclaimers: [],
+      menuId: 'menu1',
+    );
+    final json = r.toJson();
+    expect(json['address_id'], 'addr1');
+    expect(json.containsKey('address'), false);
+    expect(json['menu_id'], 'menu1');
+  });
+
+  test('Restaurant.todayHours handles empty hours', () {
+    final r = Restaurant(
+      id: 'r1',
+      name: 'R1',
+      addressId: '',
+      website: '',
+      hours: [],
+      phone: '',
+      cuisine: '',
+      disclaimers: [],
+    );
+    expect(r.todayHours, 'Hours unavailable');
+  });
+
+  test('Restaurant.fromJson handles missing optional fields', () {
+    final data = <String, dynamic>{
+      'id': 'r2',
+      'name': 'R2',
+      'address_id': 'addr2',
+    };
+    final r = Restaurant.fromJson(data);
+    expect(r.menuId, '');
+    expect(r.allergens, isEmpty);
+    expect(r.diets, isEmpty);
+    expect(r.hours, isEmpty);
+    expect(r.disclaimers, isEmpty);
   });
 }

@@ -16,7 +16,6 @@ void main() {
         phone: '',
         cuisine: 'Cafe',
         disclaimers: [],
-        logoUrl: null,
       );
 
       final r2 = Restaurant(
@@ -28,7 +27,6 @@ void main() {
         phone: '',
         cuisine: 'Diner',
         disclaimers: [],
-        logoUrl: null,
       );
 
       // Implement a focused test service that mimics the Firestore queries

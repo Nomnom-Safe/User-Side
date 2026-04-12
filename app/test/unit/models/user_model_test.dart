@@ -131,9 +131,14 @@ void main() {
       expect(user.allergies.length, 50);
     });
 
-    test('fromJson throws when required fields are missing', () {
+    test('fromJson handles missing fields with defaults', () {
       final missing = <String, dynamic>{};
-      expect(() => User.fromJson(missing), throwsA(isA<Error>()));
+      final user = User.fromJson(missing);
+      expect(user.id, '');
+      expect(user.firstName, '');
+      expect(user.lastName, '');
+      expect(user.email, '');
+      expect(user.allergies, isEmpty);
     });
 
     test('preserves allergy list contents including duplicates', () {

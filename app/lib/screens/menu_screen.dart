@@ -314,6 +314,15 @@ class _MenuScreenState extends State<MenuScreen> {
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(item.description),
                               ),
+                            if (item.hasIngredients)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  'Ingredients: ${item.ingredients}',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.grey[700]),
+                                ),
+                              ),
                             if (item.allergens.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 4),

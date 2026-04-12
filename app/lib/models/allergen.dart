@@ -6,6 +6,6 @@ class Allergen {
 
   /// Create an Allergen object from JSON data
   factory Allergen.fromJson(String id, Map<String, dynamic> json) {
-    return Allergen(id: id, label: json['label']);
+    return Allergen(id: id, label: json['label'] ?? '');
   }
 }

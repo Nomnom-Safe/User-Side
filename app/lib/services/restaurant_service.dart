@@ -8,10 +8,9 @@ class RestaurantService {
   RestaurantService([dynamic firestore])
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  /// Fetch all restaurants from Firestore
+  /// Fetch all restaurants (businesses) from Firestore
   Future<List<Restaurant>> getAllRestaurants() async {
-    // Query Firestore to get all restaurant documents using injected instance.
-    final snapshot = await _firestore.collection('restaurants').get();
+    final snapshot = await _firestore.collection('businesses').get();
     final docs = (snapshot.docs as List).cast<dynamic>();
 
     final allRestaurants = docs.map<Restaurant>((doc) {
@@ -35,10 +34,9 @@ class RestaurantService {
 
     // Iterate over each restaurant to evaluate its menu items.
     for (final restaurant in allRestaurants) {
-      // Query Firestore for the menu associated with the current restaurant.
       final menuSnapshot = await _firestore
           .collection('menus')
-          .where('restaurant_id', isEqualTo: restaurant.id)
+          .where('business_id', isEqualTo: restaurant.id)
           .limit(1)
           .get();
       // Skip this restaurant if no menu is found.

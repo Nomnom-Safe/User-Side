@@ -81,7 +81,6 @@ void main() {
             phone: '123',
             cuisine: 'Test',
             disclaimers: [],
-            logoUrl: null,
           ),
         ],
       );
@@ -136,7 +135,6 @@ void main() {
               phone: '123',
               cuisine: 'Test',
               disclaimers: [],
-              logoUrl: null,
             ),
           ],
           filtered: [],

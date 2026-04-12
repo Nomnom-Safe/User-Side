@@ -9,14 +9,18 @@ void main() {
       'description': 'Desc',
       'allergens': <String>[],
       'menu_id': 'm1',
+      'ingredients': 'flour, sugar',
     };
 
     final item = MenuItem.fromJson(data);
     expect(item.id, 'mi1');
     expect(item.menuId, 'm1');
+    expect(item.ingredients, 'flour, sugar');
+    expect(item.hasIngredients, true);
     final json = item.toJson();
     expect(json['menu_id'], 'm1');
     expect(json['name'], 'Item 1');
+    expect(json['ingredients'], 'flour, sugar');
   });
 
   test('MenuItem.fromJson reads allergens key and handles missing values', () {
@@ -49,5 +53,18 @@ void main() {
     );
     expect(item2.allergens, isA<List<String>>());
     expect(item2.allergens, isEmpty);
+  });
+
+  test('MenuItem.fromJson handles missing ingredients', () {
+    final data = {
+      'id': 'mi3',
+      'name': 'Item 3',
+      'description': 'Desc',
+      'allergens': <String>[],
+      'menu_id': 'm1',
+    };
+    final item = MenuItem.fromJson(data);
+    expect(item.ingredients, '');
+    expect(item.hasIngredients, false);
   });
 }
