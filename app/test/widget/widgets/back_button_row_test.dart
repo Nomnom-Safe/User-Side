@@ -7,7 +7,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: BackButtonRow())),
+      const MaterialApp(home: Scaffold(body: BackButtonRow.home())),
     );
 
     final iconFinder = find.byIcon(Icons.arrow_back);
@@ -15,5 +15,14 @@ void main() {
 
     expect(iconFinder, findsOneWidget);
     expect(tooltipFinder, findsOneWidget);
+  });
+
+  testWidgets('BackButtonRow.home custom tooltip', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: BackButtonRow.home(tooltipText: 'Back to Home')),
+      ),
+    );
+    expect(find.byTooltip('Back to Home'), findsOneWidget);
   });
 }

@@ -1,3 +1,4 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,6 +10,7 @@ import 'package:nomnom_safe/models/user.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/services/restaurant_service.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 class _FakeAllergenService extends AllergenService {
   final Map<String, String> idToLabel;
@@ -19,7 +21,7 @@ class _FakeAllergenService extends AllergenService {
     this.idToLabel = const {},
     this.labelToId = const {},
     this.labelsForIds = const [],
-  }) : super({});
+  }) : super(FakeFirebaseFirestore());
 
   @override
   Future<Map<String, String>> getAllergenIdToLabelMap() async => idToLabel;
@@ -38,7 +40,7 @@ class _FakeRestaurantService extends RestaurantService {
   _FakeRestaurantService({
     this.restaurants = const [],
     this.filtered = const [],
-  }) : super({});
+  }) : super(FakeFirebaseFirestore());
 
   @override
   Future<List<Restaurant>> getAllRestaurants() async => restaurants;
@@ -111,7 +113,10 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('No allergens selected.'), findsOneWidget);
+      expect(
+        find.text(UserFeedbackMessages.homeSelectAllergensHint),
+        findsOneWidget,
+      );
       expect(find.text('Test R'), findsOneWidget);
     });
 
@@ -178,7 +183,10 @@ void main() {
           find.textContaining('The following restaurants'),
           findsOneWidget,
         );
-        expect(find.text('No restaurants match your filters.'), findsOneWidget);
+        expect(
+          find.text(UserFeedbackMessages.homeNoRestaurantsMatch),
+          findsOneWidget,
+        );
       },
     );
 

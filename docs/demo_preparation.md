@@ -304,10 +304,10 @@ Different screens use different back button patterns:
 | `EditProfileScreen` | `BackButtonRow` widget          | `replaceIfNotCurrent` to profile |
 | `ProfileScreen`     | No back button                  | Uses bottom nav only             |
 
-**Fix:** Standardize back navigation. Either:
+**Fix:** Standardize back navigation:
 
 - Use the `BackButtonRow` widget everywhere (adapting it to accept a target route)
-- Or put a back button in the AppBar (more conventional)
+- Do not put a back button in the AppBar
 
 ### 4.2 Heading Style Inconsistency
 
@@ -340,13 +340,13 @@ Different screens use different back button patterns:
 
 **Fix:** Define a standard content padding constant (e.g., `EdgeInsets.all(24)` or `EdgeInsets.symmetric(horizontal: 16, vertical: 24)`) and use it across all screens.
 
-### 4.4 AppBar Actions When Signed In
+### 4.4 AppBar Actions When Signed In (SKIP)
 
-When signed in, the AppBar only shows "Sign Out". There is no way to navigate to the profile from the AppBar itself; it's only in the bottom nav. Consider adding a profile icon to the AppBar for signed-in users.
+~~When signed in, the AppBar only shows "Sign Out". There is no way to navigate to the profile from the AppBar itself; it's only in the bottom nav. Consider adding a profile icon to the AppBar for signed-in users.~~
 
-### 4.5 Bottom Navigation Bar
+### 4.5 Bottom Navigation Bar (SKIP)
 
-The bottom nav only shows for signed-in users (which is fine), but it only has 2 items: "Search" and "Profile". Consider if this is the final design or if you want to add more destinations.
+~~The bottom nav only shows for signed-in users (which is fine), but it only has 2 items: "Search" and "Profile". Consider if this is the final design or if you want to add more destinations.~~
 
 ### 4.6 Loading Spinner Inconsistency
 
@@ -354,11 +354,11 @@ Some loading spinners are sized (`SizedBox(height: 20, width: 20)` inside button
 
 ### Action Items
 
-- [ ] Standardize back button pattern (create a reusable widget or use AppBar leading)
-- [ ] Standardize heading style across all screens
-- [ ] Define and use a constant for page padding
-- [ ] Consider adding profile icon to AppBar for signed-in users
-- [ ] Ensure all loading spinners use consistent sizing
+- [x] Standardize back button pattern (create a reusable widget)
+- [x] Standardize heading style across all screens
+- [x] Define and use a constant for page padding
+- [ ] ~~Consider adding profile icon to AppBar for signed-in users~~ (SKIP)
+- [x] Ensure all loading spinners use consistent sizing
 
 ---
 
@@ -385,10 +385,10 @@ Only `ProfileScreen` shows a success SnackBar after editing. Sign-in, sign-up, a
 
 **Fix:**
 
-- [ ] Add success SnackBar after sign-in ("Welcome back, {name}!")
-- [ ] Add success SnackBar after sign-up ("Account created successfully!")
-- [ ] Add success SnackBar after password change ("Password updated successfully.")
-- [ ] Add success SnackBar after sign-out ("You have been signed out.")
+- [x] Add success SnackBar after sign-in ("Welcome back, {name}!")
+- [x] Add success SnackBar after sign-up ("Account created successfully!")
+- [x] Add success SnackBar after password change ("Password updated successfully.")
+- [x] Add success SnackBar after sign-out ("You have been signed out.")
 
 ### 5.3 Form Validation Feedback
 
@@ -408,16 +408,16 @@ Buttons in `SignInScreen` and `UpdatePasswordView` show a small spinner while lo
 | ---------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | No restaurants match         | "No restaurants match your filters"         | "No restaurants found matching your allergen filters. Try adjusting your selections."     |
 | No menu items match          | "No menu items match your allergen filters" | "No safe menu items found. All items at this restaurant contain your selected allergens." |
-| No allergens selected (home) | "No allergens selected."                    | "Select allergens above to filter restaurants by dietary safety."                         |
+| No allergens selected (home) | "No allergens selected."                    | "Select allergens above to filter restaurants by dietary safety or cuisine."              |
 | No allergens on profile      | "No allergens selected" (italic)            | Fine as-is                                                                                |
 
 ### Action Items
 
-- [ ] Replace SnackBar errors with `ErrorBanner` widget consistently
-- [ ] Add success SnackBars for sign-in, sign-up, password change, sign-out
-- [ ] Remove redundant "Please fix the errors above" SnackBars
-- [ ] Create a `LoadingButton` widget and use it everywhere
-- [ ] Improve empty state messages
+- [x] Replace SnackBar errors with `ErrorBanner` widget consistently
+- [x] Add success SnackBars for sign-in, sign-up, password change, sign-out
+- [x] Remove redundant "Please fix the errors above" SnackBars
+- [x] Create a `LoadingButton` widget and use it everywhere
+- [x] Improve empty state messages
 
 ---
 
@@ -551,11 +551,11 @@ Creates `AllergenService()` three times instead of using the one from the provid
 
 ### Action Items
 
-- [ ] Delete `utils/auth_utils.dart`
-- [ ] Fix `Restaurant.toJson()` field name
-- [ ] Fix `Address.fromJson` to include `id`
-- [ ] Use provider's `AllergenService` in `SignUpAllergenView`
-- [ ] Consider typing Firestore instances properly in services
+- [x] Delete `utils/auth_utils.dart`
+- [x] Fix `Restaurant.toJson()` field name
+- [x] Fix `Address.fromJson` to include `id`
+- [x] Use provider's `AllergenService` in `SignUpAllergenView`
+- [x] Consider typing Firestore instances properly in services
 
 ---
 

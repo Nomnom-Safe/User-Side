@@ -11,6 +11,10 @@ import 'package:nomnom_safe/providers/allergen_selection_provider.dart';
 import 'package:nomnom_safe/models/menu.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
 import 'package:nomnom_safe/utils/user_feedback_messages.dart';
+import 'package:nomnom_safe/theme/screen_insets.dart';
+import 'package:nomnom_safe/widgets/back_button_row.dart';
+import 'package:nomnom_safe/widgets/nomnom_progress.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
 
 class MenuScreen extends StatefulWidget {
   final Restaurant restaurant;
@@ -60,6 +64,8 @@ class _MenuScreenState extends State<MenuScreen> {
 
   bool isLoadingMenu = true;
   String? _menuError;
+  String? _allergenLoadError;
+  bool _initialDataRequested = false;
 
   @override
   void didChangeDependencies() {
@@ -81,8 +87,8 @@ class _MenuScreenState extends State<MenuScreen> {
       _selectionProvider = null;
     }
 
-    // Only fetch once
-    if (allergenIdToLabel.isEmpty) {
+    if (!_initialDataRequested) {
+      _initialDataRequested = true;
       _loadData();
     }
   }
@@ -155,15 +161,16 @@ class _MenuScreenState extends State<MenuScreen> {
           allergenIdToLabel = idToLabel;
           _allergenLabelToId = labelToId;
           _selectedAllergenLabels = selectedLabels.toSet();
+          _allergenLoadError = null;
         });
         // Recompute filtered items now that we have allergen labels available
         _updateFilteredMenuItems();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(UserFeedbackMessages.loadAllergensFailed)),
-        );
+        setState(() {
+          _allergenLoadError = UserFeedbackMessages.loadAllergensFailed;
+        });
       }
     }
   }
@@ -199,18 +206,14 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Restaurant name and navigation buttons
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
+    return Padding(
+      padding: ScreenInsets.content,
+      child: Column(
+        children: [
+          // Restaurant name and navigation buttons
+          Row(
             children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => replaceIfNotCurrent(context, AppRoutes.home),
-                tooltip: 'Back to Home',
-              ),
+              BackButtonRow.home(tooltipText: 'Back to Home'),
               Expanded(
                 child: Text(
                   widget.restaurant.displayName,
@@ -231,144 +234,177 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ],
           ),
-        ),
-        // Allergen filter
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              // Allergen Filter
-              Expanded(
-                child: FilterModal(
-                  buttonLabel: 'Allergens',
-                  title: 'Filter by Allergen',
-                  options: allergenIdToLabel.values.toList(),
-                  selectedOptions: _selectedAllergenLabels.toList(),
-                  onChanged: (selectedLabels) {
-                    final matchedIds = selectedLabels
-                        .map((label) => _allergenLabelToId[label])
-                        .where((id) => id != null)
-                        .cast<String>()
-                        .toSet();
-
-                    setState(() {
-                      _selectedAllergenIds = matchedIds;
-                      _selectedAllergenLabels = selectedLabels.toSet();
-                      _updateFilteredMenuItems();
-                    });
-                    // Persist selection so HomeScreen and other screens update
-                    try {
-                      context.read<AllergenSelectionProvider>().setSelectedIds(
-                        matchedIds,
-                      );
-                    } catch (_) {}
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Item type filter (uses reusable Filter widget)
-              Expanded(
-                child: FilterModal(
-                  buttonLabel: 'Item Types',
-                  title: 'Filter by item type',
-                  options: availableItemTypes,
-                  selectedOptions: selectedItemTypes,
-                  onChanged: (selected) {
-                    setState(() {
-                      // Keep original capitalization for display
-                      selectedItemTypes = selected.toList();
-                      _updateFilteredMenuItems();
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Filter description text (only when allergen filter is on and results are visible)
-        if (_selectedAllergenLabels.isNotEmpty && filteredMenuItems.isNotEmpty)
+          // Allergen + item-type filters (or allergen load error + retry)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'Showing menu items that do not contain your selected allergens:',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        // Menu items list
-        Expanded(
-          child: isLoadingMenu
-              ? const Center(child: CircularProgressIndicator())
-              : _menuError != null
-              ? Center(
-                  child: Text(
-                    _menuError!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                )
-              : restaurantMenu == null
-              ? const Center(
-                  child: Text('No menu available for this restaurant.'),
-                )
-              : allMenuItems.isEmpty
-              ? Center(
-                  child: Text(
-                    UserFeedbackMessages.menuNoItemsListed,
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              : filteredMenuItems.isEmpty
-              ? const Center(
-                  child: Text('No menu items match your current filters.'),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 16,
-                  ),
-                  itemCount: filteredMenuItems.length,
-                  itemBuilder: (context, index) {
-                    final item = filteredMenuItems[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      child: ListTile(
-                        title: Text(item.name),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (item.description.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(item.description),
-                              ),
-                            if (item.hasIngredients)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  'Ingredients: ${item.ingredients}',
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(color: Colors.grey[700]),
-                                ),
-                              ),
-                            if (item.allergens.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  'Contains: ${item.allergens.map((id) => allergenIdToLabel[id] ?? id).join(", ").toLowerCase()}',
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                              ),
-                          ],
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: _allergenLoadError != null
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ErrorBanner(_allergenLoadError!),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () {
+                          _fetchAllergens();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Retry'),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      // Allergen Filter
+                      Expanded(
+                        child: FilterModal(
+                          buttonLabel: 'Allergens',
+                          title: 'Filter by Allergen',
+                          options: allergenIdToLabel.values.toList(),
+                          selectedOptions: _selectedAllergenLabels.toList(),
+                          onChanged: (selectedLabels) {
+                            final matchedIds = selectedLabels
+                                .map((label) => _allergenLabelToId[label])
+                                .where((id) => id != null)
+                                .cast<String>()
+                                .toSet();
+
+                            setState(() {
+                              _selectedAllergenIds = matchedIds;
+                              _selectedAllergenLabels = selectedLabels.toSet();
+                              _updateFilteredMenuItems();
+                            });
+                            // Persist selection so HomeScreen and other screens update
+                            try {
+                              context
+                                  .read<AllergenSelectionProvider>()
+                                  .setSelectedIds(matchedIds);
+                            } catch (_) {}
+                          },
                         ),
                       ),
-                    );
-                  },
-                ),
-        ),
-      ],
+                      const SizedBox(width: 12),
+                      // Item type filter (uses reusable Filter widget)
+                      Expanded(
+                        child: FilterModal(
+                          buttonLabel: 'Item Types',
+                          title: 'Filter by item type',
+                          options: availableItemTypes,
+                          selectedOptions: selectedItemTypes,
+                          onChanged: (selected) {
+                            setState(() {
+                              // Keep original capitalization for display
+                              selectedItemTypes = selected.toList();
+                              _updateFilteredMenuItems();
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+          // Filter description text (only when allergen filter is on and results are visible)
+          if (_selectedAllergenLabels.isNotEmpty && allMenuItems.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, bottom: 8),
+              child: Text(
+                'Showing menu items that do not contain your selected allergens:',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          // Menu items list
+          Expanded(
+            child: isLoadingMenu
+                ? NomNomProgress.centeredPage()
+                : _menuError != null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ErrorBanner(_menuError!),
+                          const SizedBox(height: 8),
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: () {
+                                _fetchMenuItems();
+                              },
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Retry'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : restaurantMenu == null
+                ? const Center(
+                    child: Text('No menu available for this restaurant.'),
+                  )
+                : allMenuItems.isEmpty
+                ? Center(
+                    child: Text(
+                      UserFeedbackMessages.menuNoItemsListed,
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : filteredMenuItems.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        UserFeedbackMessages.menuNoSafeItemsWithFilters,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: filteredMenuItems.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredMenuItems[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(item.name),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (item.description.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(item.description),
+                                ),
+                              if (item.hasIngredients)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    'Ingredients: ${item.ingredients}',
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(color: Colors.grey[700]),
+                                  ),
+                                ),
+                              if (item.allergens.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    'Contains: ${item.allergens.map((id) => allergenIdToLabel[id] ?? id).join(", ").toLowerCase()}',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

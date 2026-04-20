@@ -7,6 +7,7 @@ import 'package:nomnom_safe/services/restaurant_service.dart';
 import 'package:nomnom_safe/models/user.dart';
 import 'package:nomnom_safe/models/restaurant.dart';
 import 'package:nomnom_safe/models/allergen.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 class _FakeAllergenService implements AllergenService {
   @override
@@ -85,6 +86,9 @@ void main() {
 
     expect(find.byType(HomeScreen), findsOneWidget);
     // With no allergens selected and empty restaurants, the text should be present
-    expect(find.text('No allergens selected.'), findsOneWidget);
+    expect(
+      find.text(UserFeedbackMessages.homeSelectAllergensHint),
+      findsOneWidget,
+    );
   });
 }

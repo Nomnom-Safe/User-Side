@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nomnom_safe/utils/form_validation_utils.dart';
 import 'package:nomnom_safe/widgets/text_form_field_with_controller.dart';
 import 'package:nomnom_safe/widgets/multi_select_checkbox_list.dart';
+import 'package:nomnom_safe/widgets/loading_elevated_button.dart';
 
 class EditProfileView extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -14,6 +15,7 @@ class EditProfileView extends StatelessWidget {
   final List<String> allAllergenLabels;
   final Set<String> selectedAllergenLabels;
   final void Function(String id, bool checked) onAllergenChanged;
+  final bool showHeading;
 
   const EditProfileView({
     super.key,
@@ -27,6 +29,7 @@ class EditProfileView extends StatelessWidget {
     required this.allAllergenLabels,
     required this.selectedAllergenLabels,
     required this.onAllergenChanged,
+    this.showHeading = true,
   });
 
   @override
@@ -35,12 +38,14 @@ class EditProfileView extends StatelessWidget {
       key: formKey,
       child: Column(
         children: [
-          Text(
-            'Edit Profile',
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 30),
+          if (showHeading) ...[
+            Text(
+              'Edit Profile',
+              style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+          ],
           TextFormFieldWithController(
             fieldKey: const Key('firstNameField'),
             controller: firstNameController,
@@ -77,21 +82,13 @@ class EditProfileView extends StatelessWidget {
             onChanged: onAllergenChanged,
           ),
           const SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: isLoading
-                ? null
-                : () {
-                    if (formKey.currentState!.validate()) {
-                      onSave();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please fix the errors above.'),
-                        ),
-                      );
-                    }
-                  },
-            child: const Text('Save Changes'),
+          LoadingElevatedButton(
+            label: 'Save Changes',
+            isLoading: isLoading,
+            onPressed: () {
+              if (!formKey.currentState!.validate()) return;
+              onSave();
+            },
           ),
           const SizedBox(height: 16),
           OutlinedButton(

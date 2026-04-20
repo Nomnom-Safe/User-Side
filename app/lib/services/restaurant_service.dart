@@ -3,22 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Service class to handle restaurant-related Firestore operations
 class RestaurantService {
-  final dynamic _firestore;
+  final FirebaseFirestore _firestore;
 
-  RestaurantService([dynamic firestore])
+  RestaurantService([FirebaseFirestore? firestore])
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Fetch all restaurants (businesses) from Firestore
   Future<List<Restaurant>> getAllRestaurants() async {
     final snapshot = await _firestore.collection('businesses').get();
-    final docs = (snapshot.docs as List).cast<dynamic>();
 
-    final allRestaurants = docs.map<Restaurant>((doc) {
-      final data = doc.data() as Map<String, dynamic>;
+    return snapshot.docs.map<Restaurant>((doc) {
+      final data = doc.data();
       return Restaurant.fromJson({'id': doc.id, ...data});
     }).toList();
-
-    return allRestaurants;
   }
 
   /// Filter restaurants based on selected allergen ids
@@ -40,11 +37,10 @@ class RestaurantService {
           .limit(1)
           .get();
       // Skip this restaurant if no menu is found.
-      final menuDocs = (menuSnapshot.docs as List).cast<dynamic>();
-      if (menuDocs.isEmpty) continue;
+      if (menuSnapshot.docs.isEmpty) continue;
 
       // Extract the ID of the found menu.
-      final menuId = menuDocs.first.id;
+      final menuId = menuSnapshot.docs.first.id;
 
       // Query Firestore for all menu items linked to that menu.
       final menuItemsSnapshot = await _firestore
@@ -53,9 +49,8 @@ class RestaurantService {
           .get();
 
       // Map each menu item to its list of allergens, defaulting to an empty list if none are present.
-      final itemDocs = (menuItemsSnapshot.docs as List).cast<dynamic>();
-      final menuItems = itemDocs.map<List<String>>((doc) {
-        final data = doc.data() as Map<String, dynamic>;
+      final menuItems = menuItemsSnapshot.docs.map<List<String>>((doc) {
+        final data = doc.data();
         final rawAllergens = data['allergens'];
         // Defensive: treat missing/null/non-list allergens as empty list
         final List<String> allergensList = rawAllergens is List

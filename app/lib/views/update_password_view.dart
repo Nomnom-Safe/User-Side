@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nomnom_safe/utils/form_validation_utils.dart';
 import 'package:nomnom_safe/widgets/error_banner.dart';
 import 'package:nomnom_safe/widgets/password_field.dart';
+import 'package:nomnom_safe/widgets/loading_elevated_button.dart';
 
 class UpdatePasswordView extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -10,9 +11,10 @@ class UpdatePasswordView extends StatelessWidget {
   final bool isVisible;
   final VoidCallback onToggleVisibility;
   final VoidCallback onBack;
-  final VoidCallback onSubmit;
+  final Future<void> Function() onSubmit;
   final bool isLoading;
   final String? errorMessage;
+  final bool showHeading;
 
   const UpdatePasswordView({
     super.key,
@@ -25,6 +27,7 @@ class UpdatePasswordView extends StatelessWidget {
     required this.onSubmit,
     required this.isLoading,
     this.errorMessage,
+    this.showHeading = true,
   });
 
   @override
@@ -34,12 +37,14 @@ class UpdatePasswordView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Enter New Password',
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 30),
+          if (showHeading) ...[
+            Text(
+              'Enter New Password',
+              style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+          ],
           if (errorMessage != null) ErrorBanner(errorMessage!),
           if (errorMessage != null) const SizedBox(height: 16),
           PasswordField(
@@ -75,32 +80,14 @@ class UpdatePasswordView extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          final isValid =
-                              formKey.currentState?.validate() ?? false;
-                          if (!isValid) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please fix the errors above.'),
-                              ),
-                            );
-                            return;
-                          }
-
-                          onSubmit();
-                        },
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        )
-                      : const Text('Change Password'),
+                child: LoadingElevatedButton(
+                  label: 'Change Password',
+                  isLoading: isLoading,
+                  onPressed: () async {
+                    final isValid = formKey.currentState?.validate() ?? false;
+                    if (!isValid) return;
+                    await onSubmit();
+                  },
                 ),
               ),
             ],

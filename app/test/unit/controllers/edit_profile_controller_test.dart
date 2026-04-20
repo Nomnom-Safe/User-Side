@@ -1,3 +1,4 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/controllers/edit_profile_controller.dart';
 import 'package:nomnom_safe/models/profile_update_result.dart';
@@ -49,7 +50,7 @@ class _FakeAllergenService extends AllergenService {
     required this.idToLabel,
     required this.labelToId,
     required this.labelsForIds,
-  }) : super({});
+  }) : super(FakeFirebaseFirestore());
 
   @override
   Future<Map<String, String>> getAllergenIdToLabelMap() async => idToLabel;

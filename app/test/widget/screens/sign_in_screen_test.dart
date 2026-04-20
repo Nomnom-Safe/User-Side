@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/screens/sign_in_screen.dart';
 
 void main() {
-  testWidgets('SignInScreen shows title and validation SnackBar', (
+  testWidgets('SignInScreen shows title and inline validation on submit', (
     tester,
   ) async {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: SignInScreen())));
@@ -14,7 +14,6 @@ void main() {
     await tester.tap(find.text('Sign In'));
     await tester.pump(); // start validation
 
-    // SnackBar should appear asking to fix errors
-    expect(find.text('Please fix the errors above.'), findsOneWidget);
+    expect(find.text('Email is required'), findsOneWidget);
   });
 }

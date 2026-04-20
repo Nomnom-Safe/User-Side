@@ -3,19 +3,26 @@ import 'package:provider/provider.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
 import 'package:nomnom_safe/nav/nav_utils.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
+import 'package:nomnom_safe/widgets/nomnom_snackbar.dart';
 
 /// Custom AppBar widget for consistency across the app
 class NomnomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
-  const NomnomAppBar({super.key, this.title = 'Nomnom Safe'});
+  const NomnomAppBar({super.key, this.title = 'NomNom Safe'});
 
   void _handleSignOut(BuildContext context) async {
     final authStateProvider = context.read<AuthStateProvider>();
     await authStateProvider.signOut();
 
     if (context.mounted) {
-      // Navigate back to home
+      ScaffoldMessenger.of(context).showSnackBar(
+        NomNomSnackBar(
+          context: context,
+          message: UserFeedbackMessages.signedOutSuccess,
+        ),
+      );
       replaceIfNotCurrent(
         context,
         AppRoutes.home,
@@ -35,7 +42,17 @@ class NomnomAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBar(
-      title: Text(title),
+      title: InkWell(
+        onTap: () => replaceIfNotCurrent(
+          context,
+          AppRoutes.home,
+          blockIfCurrent: [AppRoutes.home],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(title),
+        ),
+      ),
       automaticallyImplyLeading: false, // Disable automatic back arrow
       actions: [
         if (isSignedIn) ...[

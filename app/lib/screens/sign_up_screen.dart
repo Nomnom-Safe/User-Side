@@ -6,6 +6,10 @@ import 'package:nomnom_safe/nav/route_tracker.dart';
 import 'package:nomnom_safe/views/sign_up_account_view.dart';
 import 'package:nomnom_safe/views/sign_up_allergen_view.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
+import 'package:nomnom_safe/theme/screen_insets.dart';
+import 'package:nomnom_safe/widgets/back_button_row.dart';
+import 'package:nomnom_safe/widgets/nomnom_snackbar.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -80,7 +84,12 @@ class _SignUpScreenState extends State<SignUpScreen> with RouteAware {
       );
 
       if (mounted) {
-        // Navigate back to home screen and trigger AppBar rebuild
+        ScaffoldMessenger.of(context).showSnackBar(
+          NomNomSnackBar(
+            context: context,
+            message: UserFeedbackMessages.signUpSuccess,
+          ),
+        );
         replaceIfNotCurrent(
           context,
           AppRoutes.home,
@@ -105,29 +114,23 @@ class _SignUpScreenState extends State<SignUpScreen> with RouteAware {
     final viewTitle = _showAllergenView ? 'Select Allergens' : 'Create Account';
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: ScreenInsets.content,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Back button
-          Align(
-            alignment: Alignment.centerLeft,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => replaceIfNotCurrent(
-                context,
-                AppRoutes.home,
-                blockIfCurrent: [AppRoutes.home],
+          Row(
+            children: [
+              const BackButtonRow.home(),
+              Expanded(
+                child: Text(
+                  viewTitle,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
               ),
-              tooltip: 'Back',
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            viewTitle,
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
+              const SizedBox(width: 48),
+            ],
           ),
           const SizedBox(height: 32),
           _showAllergenView

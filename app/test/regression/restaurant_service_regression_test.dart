@@ -1,3 +1,4 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/services/restaurant_service.dart';
 import 'package:nomnom_safe/models/restaurant.dart';
@@ -53,7 +54,7 @@ class _TestRestaurantService extends RestaurantService {
   menuItems; // menuId -> list of allergens per item
 
   _TestRestaurantService({required this.menus, required this.menuItems})
-    : super(Object());
+    : super(FakeFirebaseFirestore());
 
   @override
   Future<List<Restaurant>> filterRestaurantsFromList(

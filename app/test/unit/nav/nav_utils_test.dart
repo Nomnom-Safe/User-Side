@@ -133,6 +133,7 @@ void main() {
   test('getNavIndexForRoute returns correct indices and defaults to 0', () {
     expect(getNavIndexForRoute(AppRoutes.home), 0);
     expect(getNavIndexForRoute(AppRoutes.profile), 1);
+    expect(getNavIndexForRoute(AppRoutes.editProfile), 1);
     expect(getNavIndexForRoute('/unknown-route'), 0);
     expect(getNavIndexForRoute(null), 0);
   });

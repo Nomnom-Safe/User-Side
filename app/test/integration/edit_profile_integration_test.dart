@@ -1,3 +1,4 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class _FakeAllergenService extends AllergenService {
     this.idToLabel = const {},
     this.labelToId = const {},
     this.labelsForIds = const [],
-  }) : super({});
+  }) : super(FakeFirebaseFirestore());
   @override
   Future<Map<String, String>> getAllergenIdToLabelMap() async => idToLabel;
   @override

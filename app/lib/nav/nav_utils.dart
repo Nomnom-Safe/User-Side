@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/nav/nav_destination.dart';
+import 'package:nomnom_safe/nav/route_constants.dart';
 
 void navigateIfNotCurrent(
   BuildContext context,
@@ -30,6 +31,11 @@ void replaceIfNotCurrent(
 }
 
 int getNavIndexForRoute(String? routeName) {
+  if (routeName == AppRoutes.editProfile) {
+    return bottomNavDestinations.indexWhere(
+      (d) => d.route == AppRoutes.profile,
+    );
+  }
   final index = bottomNavDestinations.indexWhere((d) => d.route == routeName);
   return index >= 0 ? index : 0;
 }

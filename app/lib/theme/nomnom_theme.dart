@@ -12,12 +12,16 @@ final _customScheme = _baseScheme.copyWith(
 
 final ThemeData nomnomTheme = ThemeData(
   colorScheme: _customScheme,
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    selectedItemColor: Color(0xFF008080),
+    unselectedItemColor: Colors.grey,
+  ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF008080),
     foregroundColor: Colors.white,
   ),
   iconTheme: const IconThemeData(
-    color: NomNomThemeConstants.linkBlue,
+    color: NomNomThemeConstants.iconColor,
     size: 16,
   ),
   chipTheme: ChipThemeData(

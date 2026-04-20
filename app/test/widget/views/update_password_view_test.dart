@@ -18,7 +18,7 @@ void main() {
             isVisible: false,
             onToggleVisibility: () {},
             onBack: () {},
-            onSubmit: () {},
+            onSubmit: () async {},
             isLoading: false,
           ),
         ),

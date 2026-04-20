@@ -8,6 +8,11 @@ import 'package:nomnom_safe/widgets/password_field.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
 import 'package:nomnom_safe/providers/auth_state_provider.dart';
 import 'package:nomnom_safe/nav/nav_utils.dart';
+import 'package:nomnom_safe/theme/screen_insets.dart';
+import 'package:nomnom_safe/widgets/back_button_row.dart';
+import 'package:nomnom_safe/widgets/loading_elevated_button.dart';
+import 'package:nomnom_safe/widgets/nomnom_snackbar.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -64,6 +69,14 @@ class _SignInScreenState extends State<SignInScreen> with RouteAware {
       );
 
       if (mounted) {
+        final user = context.read<AuthStateProvider>().currentUser;
+        final first = (user?.firstName ?? '').trim();
+        final welcome = first.isNotEmpty
+            ? UserFeedbackMessages.signInWelcome(first)
+            : UserFeedbackMessages.signInWelcomeGeneric;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(NomNomSnackBar(context: context, message: welcome));
         replaceIfNotCurrent(
           context,
           AppRoutes.home,
@@ -88,29 +101,23 @@ class _SignInScreenState extends State<SignInScreen> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: ScreenInsets.content,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Back button
-          Align(
-            alignment: Alignment.centerLeft,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => replaceIfNotCurrent(
-                context,
-                AppRoutes.home,
-                blockIfCurrent: [AppRoutes.home],
+          Row(
+            children: [
+              const BackButtonRow.home(),
+              Expanded(
+                child: Text(
+                  'Welcome Back',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
               ),
-              tooltip: 'Back',
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Welcome Back',
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
+              const SizedBox(width: 48),
+            ],
           ),
           const SizedBox(height: 32),
           if (_errorMessage != null) ErrorBanner(_errorMessage!),
@@ -146,37 +153,15 @@ class _SignInScreenState extends State<SignInScreen> with RouteAware {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: _isLoading
-                          ? null
-                          : () {
-                              final isValid =
-                                  _formKey.currentState?.validate() ?? false;
-
-                              if (!isValid) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Please fix the errors above.',
-                                    ),
-                                  ),
-                                );
-                                return;
-                              }
-
-                              _handleSignIn();
-                            },
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            )
-                          : const Text('Sign In'),
+                    LoadingElevatedButton(
+                      label: 'Sign In',
+                      isLoading: _isLoading,
+                      onPressed: () {
+                        final isValid =
+                            _formKey.currentState?.validate() ?? false;
+                        if (!isValid) return;
+                        _handleSignIn();
+                      },
                     ),
                   ],
                 ),

@@ -13,6 +13,9 @@ import 'package:nomnom_safe/utils/restaurant_utils.dart';
 import 'package:nomnom_safe/services/auth_service.dart';
 import 'package:nomnom_safe/nav/route_tracker.dart';
 import 'package:nomnom_safe/utils/user_feedback_messages.dart';
+import 'package:nomnom_safe/theme/screen_insets.dart';
+import 'package:nomnom_safe/widgets/nomnom_progress.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
 
 /// Main screen displaying allergen filters and a list of restaurants
 class HomeScreen extends StatefulWidget {
@@ -97,8 +100,22 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     _fetchAllergens();
   }
 
+  void _retryRestaurantLoad() {
+    if (_restaurantError == UserFeedbackMessages.filterRestaurantsFailed) {
+      _applyAllergenFilter();
+    } else {
+      _fetchUnfilteredRestaurants();
+    }
+  }
+
   /// Fetch allergen labels and update the state if the widget is still mounted
   Future<void> _fetchAllergens() async {
+    if (mounted) {
+      setState(() {
+        isLoadingAllergens = true;
+        allergenError = null;
+      });
+    }
     try {
       final idToLabel = await _allergenService.getAllergenIdToLabelMap();
       final labelToId = await _allergenService.getAllergenLabelToIdMap();
@@ -111,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
           allergenIdToLabel = idToLabel;
           _allergenLabelToId = labelToId;
           isLoadingAllergens = false;
+          allergenError = null;
           _selectedAllergenLabels = selectedLabels.toSet();
         });
       }
@@ -280,93 +298,126 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              // Allergen Filter
-              Expanded(
-                child: isLoadingAllergens
-                    ? // Show a loading spinner if allergens haven’t loaded yet
-                      Center(child: CircularProgressIndicator())
-                    : allergenError != null
-                    ? Text(
-                        allergenError!,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                      )
-                    : // Show the allergen filter widget once allergens are loaded
-                      FilterModal(
-                        buttonLabel: 'Allergens',
-                        title: 'Filter by Allergen',
-                        options: allergenIdToLabel.values.toList(),
-                        selectedOptions: _selectedAllergenIds
-                            .map((id) => allergenIdToLabel[id] ?? id)
-                            .toList(),
-                        onChanged: (selectedLabels) {
-                          final matchedIds = selectedLabels
-                              .map((label) => _allergenLabelToId[label])
-                              .where((id) => id != null)
-                              .cast<String>()
-                              .toSet();
+    return Padding(
+      padding: ScreenInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                // Allergen Filter
+                Expanded(
+                  child: isLoadingAllergens
+                      ? // Show a loading spinner if allergens haven’t loaded yet
+                        Center(child: NomNomProgress.pageIndicator())
+                      : allergenError != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ErrorBanner(allergenError!),
+                            const SizedBox(height: 8),
+                            TextButton.icon(
+                              onPressed: () {
+                                _fetchAllergens();
+                              },
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Retry'),
+                            ),
+                          ],
+                        )
+                      : // Show the allergen filter widget once allergens are loaded
+                        FilterModal(
+                          buttonLabel: 'Allergens',
+                          title: 'Filter by Allergen',
+                          options: allergenIdToLabel.values.toList(),
+                          selectedOptions: _selectedAllergenIds
+                              .map((id) => allergenIdToLabel[id] ?? id)
+                              .toList(),
+                          onChanged: (selectedLabels) {
+                            final matchedIds = selectedLabels
+                                .map((label) => _allergenLabelToId[label])
+                                .where((id) => id != null)
+                                .cast<String>()
+                                .toSet();
 
-                          setState(() {
-                            _selectedAllergenIds = matchedIds;
-                            _selectedAllergenLabels = selectedLabels.toSet();
-                          });
-                          // Persist selection globally so other screens (menu) can pick it up
-                          try {
-                            context
-                                .read<AllergenSelectionProvider>()
-                                .setSelectedIds(matchedIds);
-                          } catch (_) {}
-                          _applyAllergenFilter();
-                        },
-                      ),
-              ),
-              if (!isLoadingAllergens && allergenError == null) ...[
-                const SizedBox(width: 12),
-                Expanded(child: _buildCuisineFilter(context)),
-              ],
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-          child: Text(
-            _selectedAllergenIds.isNotEmpty
-                ? "The following restaurants offer at least one menu item that doesn't contain ${formatAllergenList(_selectedAllergenLabels.toList(), "or")}:"
-                : "No allergens selected.",
-          ),
-        ),
-        // Make the restaurant list take up remaining space
-        Expanded(
-          child: isLoadingRestaurants
-              ? const Center(child: CircularProgressIndicator())
-              : _restaurantError != null
-              ? Center(
-                  child: Text(
-                    _restaurantError!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                )
-              : restaurantList.isEmpty
-              ? const Center(child: Text('No restaurants match your filters.'))
-              : ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  itemCount: restaurantList.length,
-                  itemBuilder: (context, index) {
-                    return RestaurantCard(restaurant: restaurantList[index]);
-                  },
+                            setState(() {
+                              _selectedAllergenIds = matchedIds;
+                              _selectedAllergenLabels = selectedLabels.toSet();
+                            });
+                            // Persist selection globally so other screens (menu) can pick it up
+                            try {
+                              context
+                                  .read<AllergenSelectionProvider>()
+                                  .setSelectedIds(matchedIds);
+                            } catch (_) {}
+                            _applyAllergenFilter();
+                          },
+                        ),
                 ),
-        ),
-      ],
+                if (!isLoadingAllergens && allergenError == null) ...[
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildCuisineFilter(context)),
+                ],
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              _selectedAllergenIds.isNotEmpty
+                  ? "The following restaurants offer at least one menu item that doesn't contain ${formatAllergenList(_selectedAllergenLabels.toList(), "or")}:"
+                  : UserFeedbackMessages.homeSelectAllergensHint,
+            ),
+          ),
+          // Make the restaurant list take up remaining space
+          Expanded(
+            child: isLoadingRestaurants
+                ? NomNomProgress.centeredPage()
+                : _restaurantError != null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ErrorBanner(_restaurantError!),
+                          const SizedBox(height: 8),
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: _retryRestaurantLoad,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Retry'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : restaurantList.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        _selectedAllergenIds.isNotEmpty
+                            ? UserFeedbackMessages.homeNoRestaurantsMatch
+                            : UserFeedbackMessages.homeNoRestaurantsAvailable,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(0),
+                    itemCount: restaurantList.length,
+                    itemBuilder: (context, index) {
+                      return RestaurantCard(restaurant: restaurantList[index]);
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -3,6 +3,9 @@ import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/services/service_utils.dart';
 import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 import 'package:nomnom_safe/widgets/multi_select_checkbox_list.dart';
+import 'package:nomnom_safe/widgets/nomnom_progress.dart';
+import 'package:nomnom_safe/widgets/loading_elevated_button.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
 
 class SignUpAllergenView extends StatefulWidget {
   final bool isLoading;
@@ -43,6 +46,12 @@ class _SignUpAllergenViewState extends State<SignUpAllergenView> {
   }
 
   Future<void> _loadAllergens() async {
+    if (mounted) {
+      setState(() {
+        allergenError = null;
+        isLoadingAllergens = true;
+      });
+    }
     try {
       final idToLabel = await _allergenService.getAllergenIdToLabelMap();
       final labelToId = await _allergenService.getAllergenLabelToIdMap();
@@ -71,14 +80,20 @@ class _SignUpAllergenViewState extends State<SignUpAllergenView> {
   @override
   Widget build(BuildContext context) {
     if (isLoadingAllergens) {
-      return const Center(child: CircularProgressIndicator());
+      return NomNomProgress.centeredPage();
     }
     if (allergenError != null) {
-      return Center(
-        child: Text(
-          allergenError!,
-          style: TextStyle(color: Theme.of(context).colorScheme.error),
-        ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ErrorBanner(allergenError!),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: _loadAllergens,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+          ),
+        ],
       );
     }
     if (allergenIdToLabel.isEmpty && !isLoadingAllergens) {
@@ -111,11 +126,10 @@ class _SignUpAllergenViewState extends State<SignUpAllergenView> {
           },
         ),
         const SizedBox(height: 24),
-        ElevatedButton(
-          onPressed: widget.isLoading ? null : widget.onSubmit,
-          child: widget.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : const Text('Create Account'),
+        LoadingElevatedButton(
+          label: 'Create Account',
+          isLoading: widget.isLoading,
+          onPressed: widget.onSubmit,
         ),
         TextButton(onPressed: widget.onBack, child: const Text('Back')),
       ],

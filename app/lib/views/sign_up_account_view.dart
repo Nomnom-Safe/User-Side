@@ -5,6 +5,7 @@ import 'package:nomnom_safe/widgets/error_banner.dart';
 import 'package:nomnom_safe/widgets/password_field.dart';
 import 'package:nomnom_safe/widgets/text_form_field_with_controller.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
+import 'package:nomnom_safe/widgets/loading_elevated_button.dart';
 
 class SignUpAccountView extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -104,25 +105,15 @@ class _SignUpAccountViewState extends State<SignUpAccountView> {
                 ),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: widget.isLoading
-                    ? null
-                    : () {
-                        final isValid =
-                            widget.formKey.currentState?.validate() ?? false;
-
-                        if (!isValid) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fix the errors above.'),
-                            ),
-                          );
-                          return;
-                        }
-
-                        widget.onNext();
-                      },
-                child: const Text('Next: Select Allergens'),
+              LoadingElevatedButton(
+                label: 'Next: Select Allergens',
+                isLoading: widget.isLoading,
+                onPressed: () {
+                  final isValid =
+                      widget.formKey.currentState?.validate() ?? false;
+                  if (!isValid) return;
+                  widget.onNext();
+                },
               ),
             ],
           ),

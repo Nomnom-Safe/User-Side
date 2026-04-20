@@ -3,10 +3,11 @@ import 'package:nomnom_safe/models/restaurant.dart';
 import 'package:nomnom_safe/services/address_service.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/widgets/restaurant_link.dart';
-import 'package:nomnom_safe/nav/nav_utils.dart';
 import 'package:nomnom_safe/nav/route_constants.dart';
 import 'package:nomnom_safe/utils/user_feedback_messages.dart';
 import 'package:nomnom_safe/services/service_utils.dart';
+import 'package:nomnom_safe/theme/screen_insets.dart';
+import 'package:nomnom_safe/widgets/back_button_row.dart';
 
 /// Screen displaying detailed information about a specific restaurant
 class RestaurantScreen extends StatefulWidget {
@@ -107,34 +108,33 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: ScreenInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Back button
-          Align(
-            alignment: Alignment.centerLeft,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => replaceIfNotCurrent(
-                context,
-                AppRoutes.menu,
-                arguments: widget.restaurant,
+          Row(
+            children: [
+              BackButtonRow(
+                targetRoute: AppRoutes.menu,
+                routeArguments: widget.restaurant,
+                tooltip: 'Back to Menu',
               ),
-              tooltip: 'Back to Menu',
-            ),
+              Expanded(
+                child: Text(
+                  widget.restaurant.displayName,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(width: 48),
+            ],
           ),
-          const SizedBox(height: 12),
-          // Restaurant name
-          Text(
-            widget.restaurant.name,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
+          const SizedBox(height: 20),
           // Cuisine type
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              'Cuisine: ${widget.restaurant.cuisine}',
+              'Cuisine: ${widget.restaurant.displayCuisine}',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),

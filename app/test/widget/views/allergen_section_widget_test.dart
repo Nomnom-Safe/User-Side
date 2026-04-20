@@ -1,3 +1,4 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/views/allergen_section.dart';
@@ -15,7 +16,7 @@ class _NoopAuth extends AuthStateProvider {
 }
 
 class _NoopAllergen extends AllergenService {
-  _NoopAllergen() : super(Object());
+  _NoopAllergen() : super(FakeFirebaseFirestore());
 
   @override
   Future<Map<String, String>> getAllergenIdToLabelMap() async => {};

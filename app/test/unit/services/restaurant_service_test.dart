@@ -1,38 +1,28 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/services/restaurant_service.dart';
 
-import 'fake_firestore.dart';
+Map<String, dynamic> _businessFields(String name) => {
+  'name': name,
+  'address_id': 'a1',
+  'website': '',
+  'hours': List<String>.generate(7, (_) => ''),
+  'phone': '',
+  'cuisine': '',
+  'disclaimers': <String>[],
+  'menu_id': '',
+  'allergens': <String>[],
+  'diets': <String>[],
+};
 
 void main() {
   group('RestaurantService', () {
     test(
       'getAllRestaurants returns restaurants even with missing menus',
       () async {
-        final restaurants = [
-          FakeDocument('r1', {
-            'id': 'r1',
-            'name': 'R1',
-            'address_id': 'a1',
-            'website': '',
-            'hours': List.generate(7, (_) => ''),
-            'phone': '',
-            'cuisine': '',
-            'disclaimers': <String>[],
-            'logoUrl': null,
-          }),
-          FakeDocument('r2', {
-            'id': 'r2',
-            'name': 'R2',
-            'address_id': 'a2',
-            'website': '',
-            'hours': List.generate(7, (_) => ''),
-            'phone': '',
-            'cuisine': '',
-            'disclaimers': <String>[],
-            'logoUrl': null,
-          }),
-        ];
-        final fs = FakeFirestore({'businesses': restaurants, 'menus': []});
+        final fs = FakeFirebaseFirestore();
+        await fs.collection('businesses').doc('r1').set(_businessFields('R1'));
+        await fs.collection('businesses').doc('r2').set(_businessFields('R2'));
         final service = RestaurantService(fs);
         final all = await service.getAllRestaurants();
         expect(all.length, 2);
@@ -42,40 +32,21 @@ void main() {
     test(
       'filterRestaurantsFromList handles empty menus and allergen formats',
       () async {
-        final restaurants = [
-          FakeDocument('r1', {
-            'id': 'r1',
-            'name': 'R1',
-            'address_id': 'a1',
-            'website': '',
-            'hours': List.generate(7, (_) => ''),
-            'phone': '',
-            'cuisine': '',
-            'disclaimers': <String>[],
-            'logoUrl': null,
-          }),
-        ];
-        final menus = [
-          FakeDocument('m1', {'id': 'm1', 'business_id': 'r1'}),
-        ];
-        final menuItems = [
-          FakeDocument('i1', {
-            'id': 'i1',
-            'menu_id': 'm1',
-            'name': 'Item1',
-            'description': '',
-            'allergens': ['a1'],
-            'item_type': 'food',
-          }),
-        ];
-        final fs = FakeFirestore({
-          'businesses': restaurants,
-          'menus': menus,
-          'menu_items': menuItems,
+        final fs = FakeFirebaseFirestore();
+        await fs.collection('businesses').doc('r1').set(_businessFields('R1'));
+        await fs.collection('menus').doc('m1').set({
+          'business_id': 'r1',
+          'title': 'M',
+        });
+        await fs.collection('menu_items').doc('i1').set({
+          'menu_id': 'm1',
+          'name': 'Item1',
+          'description': '',
+          'allergens': ['a1'],
+          'item_type': 'food',
         });
         final service = RestaurantService(fs);
 
-        // Provide an empty list to filter -> should still return restaurant list
         final filtered = await service.filterRestaurantsFromList(
           await service.getAllRestaurants(),
           [],

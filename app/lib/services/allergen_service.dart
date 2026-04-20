@@ -3,13 +3,13 @@ import 'package:nomnom_safe/models/allergen.dart';
 
 /// Service class to handle allergen-related Firestore operations
 class AllergenService {
-  final dynamic _firestore;
+  final FirebaseFirestore _firestore;
 
   List<Allergen>? _cachedAllergens;
   Map<String, String>? _cachedIdToLabel;
   Map<String, String>? _cachedLabelToId;
 
-  AllergenService([dynamic firestore])
+  AllergenService([FirebaseFirestore? firestore])
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Clears in-memory caches so the next read hits Firestore again.
@@ -25,10 +25,8 @@ class AllergenService {
 
     final snapshot = await _firestore.collection('allergens').get();
 
-    final docs = (snapshot.docs as List).cast<dynamic>();
-    final allergens = docs.map<Allergen>((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return Allergen.fromJson(doc.id, data);
+    final allergens = snapshot.docs.map<Allergen>((doc) {
+      return Allergen.fromJson(doc.id, doc.data());
     }).toList();
 
     _cachedAllergens = allergens;

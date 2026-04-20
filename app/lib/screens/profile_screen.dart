@@ -4,10 +4,21 @@ import 'package:nomnom_safe/nav/route_constants.dart';
 import 'package:nomnom_safe/controllers/profile_controller.dart';
 import 'package:nomnom_safe/views/allergen_section.dart';
 import 'package:nomnom_safe/views/profile_header.dart';
+import 'package:nomnom_safe/theme/screen_insets.dart';
 import 'package:nomnom_safe/widgets/delete_account_dialog.dart';
+import 'package:nomnom_safe/widgets/error_banner.dart';
+import 'package:nomnom_safe/utils/user_feedback_messages.dart';
+import 'package:nomnom_safe/widgets/nomnom_snackbar.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String? _deleteAccountError;
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +27,21 @@ class ProfileScreen extends StatelessWidget {
         final user = controller.authProvider.currentUser;
 
         if (user == null) {
-          return Center(child: Text('Please sign in to view your profile.'));
+          return Padding(
+            padding: ScreenInsets.content,
+            child: Center(child: Text('Please sign in to view your profile.')),
+          );
         }
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: ScreenInsets.content,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (_deleteAccountError != null) ...[
+                ErrorBanner(_deleteAccountError!),
+                const SizedBox(height: 16),
+              ],
               ProfileHeader(fullName: user.fullName),
               // Email
               Text('Email', style: Theme.of(context).textTheme.titleMedium),
@@ -47,9 +65,10 @@ class ProfileScreen extends StatelessWidget {
 
                   if (success == true && context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Profile updated successfully.'),
-                        duration: Duration(seconds: 2),
+                      NomNomSnackBar(
+                        context: context,
+                        message: UserFeedbackMessages.profileUpdatedSuccess,
+                        duration: const Duration(seconds: 2),
                       ),
                     );
                     await controller.refreshUser(reloadAllergens: true);
@@ -65,16 +84,18 @@ class ProfileScreen extends StatelessWidget {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () async {
+                  setState(() => _deleteAccountError = null);
                   final success = await showDeleteAccountDialog(
                     context,
                     controller,
                   );
                   if (success == true && context.mounted) {
                     Navigator.of(context).pushReplacementNamed(AppRoutes.home);
-                  } else if (success == false) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Account deletion failed.")),
-                    );
+                  } else if (success == false && mounted) {
+                    setState(() {
+                      _deleteAccountError =
+                          UserFeedbackMessages.accountDeletionFailed;
+                    });
                   }
                 },
                 child: const Text('Delete Account'),

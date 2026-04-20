@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/controllers/profile_controller.dart';
-import 'package:nomnom_safe/widgets/text_form_field_with_controller.dart';
+import 'package:nomnom_safe/utils/form_validation_utils.dart';
+import 'package:nomnom_safe/widgets/password_field.dart';
+import 'package:nomnom_safe/widgets/nomnom_progress.dart';
 
 Future<bool?> showDeleteAccountDialog(
   BuildContext context,
@@ -28,6 +30,7 @@ class _DeleteAccountDialogContentState
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _passwordController;
   bool _isDeleting = false;
+  bool _passwordVisible = false;
 
   @override
   void initState() {
@@ -62,12 +65,16 @@ class _DeleteAccountDialogContentState
           children: [
             const Text('Enter your password to confirm account deletion.'),
             const SizedBox(height: 12),
-            TextFormFieldWithController(
+            PasswordField(
+              fieldKey: const Key('deleteAccountPassword'),
               controller: _passwordController,
               label: 'Password',
-              obscureText: true,
-              isRequired: true,
+              isVisible: _passwordVisible,
+              onToggleVisibility: () =>
+                  setState(() => _passwordVisible = !_passwordVisible),
               enabled: !_isDeleting,
+              isRequired: true,
+              validator: FormValidators.password,
             ),
           ],
         ),
@@ -79,13 +86,7 @@ class _DeleteAccountDialogContentState
         ),
         TextButton(
           onPressed: _isDeleting ? null : _onDelete,
-          child: _isDeleting
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Delete'),
+          child: _isDeleting ? NomNomProgress.inline() : const Text('Delete'),
         ),
       ],
     );

@@ -1,19 +1,16 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nomnom_safe/services/allergen_service.dart';
 import 'package:nomnom_safe/models/allergen.dart';
-
-import 'fake_firestore.dart';
 
 void main() {
   group('AllergenService', () {
     test(
       'idsToLabels and labelsToIds maps convert correctly and handle unknowns',
       () async {
-        final fakeAllergens = [
-          FakeDocument('a1', {'id': 'a1', 'label': 'Peanuts'}),
-          FakeDocument('a2', {'id': 'a2', 'label': 'Dairy'}),
-        ];
-        final fs = FakeFirestore({'allergens': fakeAllergens});
+        final fs = FakeFirebaseFirestore();
+        await fs.collection('allergens').doc('a1').set({'label': 'Peanuts'});
+        await fs.collection('allergens').doc('a2').set({'label': 'Dairy'});
         final service = AllergenService(fs);
 
         final all = await service.getAllergens();
@@ -29,7 +26,7 @@ void main() {
     );
 
     test('getAllergens returns empty list when no collection', () async {
-      final fs = FakeFirestore({});
+      final fs = FakeFirebaseFirestore();
       final service = AllergenService(fs);
       final all = await service.getAllergens();
       expect(all, isEmpty);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/controllers/profile_controller.dart';
+import 'package:nomnom_safe/widgets/nomnom_progress.dart';
 
 class AllergenSection extends StatelessWidget {
   final ProfileController controller;
@@ -8,7 +9,7 @@ class AllergenSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (controller.isLoadingAllergens) {
-      return const Center(child: CircularProgressIndicator());
+      return NomNomProgress.centeredPage();
     }
     if (controller.allergenError != null) {
       return Column(

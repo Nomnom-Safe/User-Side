@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nomnom_safe/widgets/error_banner.dart';
 import 'package:nomnom_safe/widgets/password_field.dart';
+import 'package:nomnom_safe/widgets/loading_elevated_button.dart';
 
 class VerifyCurrentPasswordView extends StatelessWidget {
   final TextEditingController controller;
@@ -9,6 +10,7 @@ class VerifyCurrentPasswordView extends StatelessWidget {
   final Future<void> Function() onContinue;
   final bool isLoading;
   final String? errorMessage;
+  final bool showHeading;
 
   const VerifyCurrentPasswordView({
     super.key,
@@ -18,6 +20,7 @@ class VerifyCurrentPasswordView extends StatelessWidget {
     required this.onContinue,
     required this.isLoading,
     this.errorMessage,
+    this.showHeading = true,
   });
 
   @override
@@ -25,12 +28,14 @@ class VerifyCurrentPasswordView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Enter Current Password',
-          style: Theme.of(context).textTheme.headlineSmall,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 30),
+        if (showHeading) ...[
+          Text(
+            'Enter Current Password',
+            style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 30),
+        ],
         if (errorMessage != null) ErrorBanner(errorMessage!),
         if (errorMessage != null) const SizedBox(height: 16),
         PasswordField(
@@ -42,17 +47,12 @@ class VerifyCurrentPasswordView extends StatelessWidget {
           enabled: !isLoading,
         ),
         const SizedBox(height: 32),
-        ElevatedButton(
-          onPressed: isLoading ? null : onContinue,
-          child: isLoading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              : const Text('Continue'),
+        LoadingElevatedButton(
+          label: 'Continue',
+          isLoading: isLoading,
+          onPressed: () {
+            onContinue();
+          },
         ),
       ],
     );
