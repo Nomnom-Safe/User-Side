@@ -17,8 +17,7 @@
 5. [User Feedback Consistency](#5-user-feedback-consistency)
 6. [Edge Cases](#6-edge-cases)
 7. [Code Quality & Cleanup](#7-code-quality--cleanup)
-8. [Demo-Day Polish](#8-demo-day-polish)
-9. [Suggested Sprint Schedule](#9-suggested-sprint-schedule)
+8. [Suggested Sprint Schedule](#8-suggested-sprint-schedule)
 
 ---
 
@@ -559,59 +558,7 @@ Creates `AllergenService()` three times instead of using the one from the provid
 
 ---
 
-## 8. Demo-Day Polish
-
-### 8.1 Splash / Loading Screen
-
-The app currently shows nothing meaningful while Firebase initializes and allergens load (before `runApp`). Consider adding a splash screen or loading indicator.
-
-### 8.2 App Icon and Branding
-
-Ensure the app has a custom icon and branding instead of the default Flutter icon.
-
-### 8.3 Error Boundaries
-
-Wrap the root `MaterialApp` in an error widget builder to catch and display unexpected errors gracefully during the demo.
-
-```dart
-ErrorWidget.builder = (FlutterErrorDetails details) {
-  return Center(child: Text('Something went wrong'));
-};
-```
-
-### 8.4 Test the Full User Journey
-
-Before the demo, test these flows end-to-end:
-
-1. **Guest flow**: Open app > see restaurants > filter by allergens > view menu > view restaurant details
-2. **Sign-up flow**: Sign up > select allergens > see filtered home screen > view profile > edit profile > change allergens > see updated home screen
-3. **Sign-in flow**: Sign out > sign in > verify allergens persisted > navigate to profile
-4. **Edit profile flow**: Edit name/email > save > verify changes reflected
-5. **Password change flow**: Edit profile > change password > verify current > set new > verify sign-in with new password
-6. **Delete account flow**: Profile > delete account > confirm > verify redirected to home as guest
-7. **Edge cases**: Try invalid email, wrong password, mismatched passwords, empty fields
-
-### 8.5 Responsive Design
-
-Check how the app looks on:
-
-- [ ] Mobile (phone-sized viewport)
-- [ ] Tablet
-- [ ] Web (desktop browser window)
-
-The hover effects on `RestaurantCard` suggest web support, so ensure the layout works at various widths.
-
-### Action Items
-
-- [ ] Add splash screen or loading state
-- [ ] Set custom app icon
-- [ ] Add global error boundary
-- [ ] Run through all user journey test flows
-- [ ] Test on multiple screen sizes
-
----
-
-## 9. Suggested Sprint Schedule
+## 8. Suggested Sprint Schedule
 
 ### Week 1 (April 9-15): Fix Bugs & Sync Models
 
@@ -627,15 +574,7 @@ The hover effects on `RestaurantCard` suggest web support, so ensure the layout 
 | ----------- | -------------- | ------------------------------------------------------------------------------------------------- |
 | **Day 1-2** | UI Consistency | Standardize back buttons, headings, padding, loading spinners (Section 4)                         |
 | **Day 3**   | User Feedback  | Standardize error/success display, add success SnackBars, create LoadingButton widget (Section 5) |
-| **Day 4**   | Code Cleanup   | Remove unused files, fix code quality items (Section 7)                                           |
-| **Day 5**   | Demo Prep      | Add splash screen, set app icon, add error boundary, full user journey testing (Section 8)        |
-
-### Day Before Demo (April 22)
-
-- [ ] Complete all test flows from Section 8.4
-- [ ] Test on target demo device/platform
-- [ ] Prepare demo script (which features to show and in what order)
-- [ ] Have a fallback plan if Firebase is slow/down
+| **Day 4-5** | Code Cleanup   | Remove unused files, fix code quality items (Section 7)                                           |
 
 ---
 
@@ -659,5 +598,4 @@ The hover effects on `RestaurantCard` suggest web support, so ensure the layout 
 | **P2**   | `widgets/back_button_row.dart`       | Make reusable with target route param                 |
 | **P2**   | All screens                          | Standardize padding, headings, error display          |
 | **P2**   | `utils/auth_utils.dart`              | Delete (unused)                                       |
-| **P3**   | `main.dart`                          | Add error boundary                                    |
 | **P3**   | Various                              | Add success SnackBars, create LoadingButton widget    |
