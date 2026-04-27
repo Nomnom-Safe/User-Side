@@ -37,8 +37,5 @@ footer: Capstone Project Week 15 Progress Report - Anna Dinius
 
 - 3/3 Week 15 milestones completed
   - 100% total
-  - ~14% per day
-- #/# Sprint 2 milestones completed
+- 15/15 Sprint 2 milestones completed
   - 100% total
-  - ~#% per week
-  - ~#% per day

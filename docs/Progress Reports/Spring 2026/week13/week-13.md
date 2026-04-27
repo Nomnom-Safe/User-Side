@@ -37,10 +37,7 @@ footer: Capstone Project Week 13 Progress Report - Anna Dinius
 
 ## 🔥 Burndown rate
 
-- 3/3 Week 13 milestones completed
+- 3/3 Week 13 requirements completed
   - 100% total
-  - ~14% per day
-- #/# Sprint 2 milestones completed
-  - #% total
-  - ~#% per week
-  - ~#% per day
+- 8/15 Sprint 2 requirements completed
+  - ~53% total

@@ -37,10 +37,7 @@ footer: Capstone Project Week 14 Progress Report - Anna Dinius
 
 ## 🔥 Burndown rate
 
-- 3/3 Week 14 milestones completed
+- 4/4 Week 14 requirements completed
   - 100% total
-  - ~14% per day
-- #/# Sprint 2 milestones completed
-  - #% total
-  - ~#% per week
-  - ~#% per day
+- 12/15 Sprint 2 requirements completed
+  - 80% total
