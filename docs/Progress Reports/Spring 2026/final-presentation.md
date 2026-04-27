@@ -112,6 +112,13 @@ Full-stack web app tech stack:
 
 ## Burndown Rate: 100%
 
+### Sprint 1
+
+- Milestones: [`milestones.pdf`](https://github.com/Nomnom-Safe/Business-Side/blob/main/docs/individual/anna-dinius/sprint1/milestones.pdf)
+- Requirements: [`requirements.md`](https://github.com/Nomnom-Safe/Business-Side/blob/main/docs/individual/anna-dinius/sprint1/requirements.md)
+
+### Sprint 2
+
 - Milestones: [`milestones.pdf`](https://github.com/Nomnom-Safe/User-Side/blob/main/docs/Progress%20Reports/Spring%202026/sprint2/milestones.pdf)
 - Requirements: [`requirements.md`](https://github.com/Nomnom-Safe/User-Side/blob/main/docs/Progress%20Reports/Spring%202026/sprint2/requirements.md)
 
